@@ -1,6 +1,6 @@
 /* Daydream Cinema: Sets tab, a full-screen slideshow.
    Each set fills the screen with its video playing. Its three renders sit as thumbnails to swap in a still.
-   Next set / arrow keys / swipe zoom on to the next set. #worlds/<slug> links straight to one set.
+   When a video ends it zooms on to the next set by itself. Next set / arrow keys / swipe do the same. #worlds/<slug> links straight to one set.
    main.js calls window.worldsView(on, slug) whenever the route changes.
 
    To add a set: make assets/sets/<slug>/ with shot-1.jpg, shot-2.jpg, shot-3.jpg (renders),
@@ -99,6 +99,10 @@ const SHOTS = 3;
     wheel+=e.deltaX; if(Math.abs(wheel)>120){ (wheel>0?next:prev)(); wheel=-1e9*Math.sign(wheel); }
   },{passive:false});
   addEventListener("keydown",e=>{ if(!active) return; if(e.key==="ArrowRight") next(); if(e.key==="ArrowLeft") prev(); });
+  /* when a set's video finishes, move on to the next set (not while someone is looking at a still) */
+  [$("wSlideA"),$("wSlideB")].forEach(layer=>layer.querySelector("video").addEventListener("ended",()=>{
+    if(active && layer===front && view==="video") next();
+  }));
 
   /* ===== below the slideshow: one box per set, scroll sideways through its stills ===== */
   $("setList").innerHTML=SETS.map((s,i)=>`
