@@ -2,10 +2,6 @@
 
 Plain HTML, CSS and JavaScript. No build step.
 
-## Run it
-1. Open this folder in VS Code.
-2. Install the Live Server extension, right-click `index.html`, choose "Open with Live Server".
-
 ## Where things live
 - `index.html`: page structure for all tabs: Now showing, Cast (`#characters`), Sets (`#worlds`), Cinema (`#cinema`), Shop (`#store`). The logo goes to the home wall (`#home`)
 - `css/style.css`: all styling; color and font tokens at the top
