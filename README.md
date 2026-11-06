@@ -19,3 +19,4 @@ Plain HTML, CSS and JavaScript. No build step.
 
 ## Adding more theater boxes
 Drop new mp4s in `assets/videos/`, add their paths to `SCENES`, raise `CELL_COUNT` for more boxes. Videos are spread across the boxes automatically.
+# DaydreamCinema-website
