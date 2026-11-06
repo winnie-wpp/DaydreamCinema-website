@@ -1,0 +1,1846 @@
+{
+ "version": 3,
+ "size": [
+  1315,
+  2160
+ ],
+ "order": [
+  "shoe",
+  "bot",
+  "top",
+  "outer",
+  "hat"
+ ],
+ "looks": {
+  "ush": "Usher (the canon home look)",
+  "wst": "Western",
+  "spc": "Space opera"
+ },
+ "parts": [
+  {
+   "id": "probe_fhatush_r1",
+   "zone": "hat",
+   "look": "ush",
+   "lookName": "Usher (the canon home look)",
+   "name": "Usher hat",
+   "occupies": [
+    "hat"
+   ],
+   "rank": 4,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "hat",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fhatush_r1.png",
+   "x": 422,
+   "y": 156,
+   "w": 583,
+   "h": 405
+  },
+  {
+   "id": "probe_fhatwst_r1",
+   "zone": "hat",
+   "look": "wst",
+   "lookName": "Western",
+   "name": "Western hat",
+   "occupies": [
+    "hat"
+   ],
+   "rank": 4,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "hat",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fhatwst_r1.png",
+   "x": 380,
+   "y": 57,
+   "w": 640,
+   "h": 524
+  },
+  {
+   "id": "probe_fhatspc_r1",
+   "zone": "hat",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "Space opera hat",
+   "occupies": [
+    "hat"
+   ],
+   "rank": 4,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "hat",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fhatspc_r1.png",
+   "x": 465,
+   "y": 99,
+   "w": 501,
+   "h": 410
+  },
+  {
+   "id": "probe_ftopush_r1",
+   "zone": "top",
+   "look": "ush",
+   "lookName": "Usher (the canon home look)",
+   "name": "Usher top",
+   "occupies": [
+    "top"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "top",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ftopush_r1.png",
+   "x": 265,
+   "y": 1142,
+   "w": 873,
+   "h": 567
+  },
+  {
+   "id": "probe_ftopwst_r1",
+   "zone": "top",
+   "look": "wst",
+   "lookName": "Western",
+   "name": "Western top",
+   "occupies": [
+    "top"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "top",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ftopwst_r1.png",
+   "x": 281,
+   "y": 1137,
+   "w": 847,
+   "h": 581
+  },
+  {
+   "id": "probe_ftopspc_r1",
+   "zone": "top",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "Space opera top",
+   "occupies": [
+    "top"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "top",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ftopspc_r1.png",
+   "x": 274,
+   "y": 1144,
+   "w": 854,
+   "h": 568
+  },
+  {
+   "id": "probe_fbotush_r1",
+   "zone": "bot",
+   "look": "ush",
+   "lookName": "Usher (the canon home look)",
+   "name": "Usher bot",
+   "occupies": [
+    "bot"
+   ],
+   "rank": 1,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "bot",
+    "keptBottom": null,
+    "holes": [],
+    "keyedPixels": 14421,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fbotush_r1.png",
+   "x": 470,
+   "y": 1630,
+   "w": 463,
+   "h": 282
+  },
+  {
+   "id": "probe_fbotwst_r1",
+   "zone": "bot",
+   "look": "wst",
+   "lookName": "Western",
+   "name": "Western bot",
+   "occupies": [
+    "bot"
+   ],
+   "rank": 1,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "bot",
+    "keptBottom": null,
+    "holes": [],
+    "keyedPixels": 11077,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fbotwst_r1.png",
+   "x": 458,
+   "y": 1628,
+   "w": 486,
+   "h": 285
+  },
+  {
+   "id": "probe_fbotspc_r1",
+   "zone": "bot",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "Space opera bot",
+   "occupies": [
+    "bot"
+   ],
+   "rank": 1,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "bot",
+    "keptBottom": null,
+    "holes": [
+     {
+      "area": 115,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 125,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 45,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 103,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 35,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 49,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     }
+    ],
+    "keyedPixels": 10672,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fbotspc_r1.png",
+   "x": 465,
+   "y": 1646,
+   "w": 476,
+   "h": 266
+  },
+  {
+   "id": "probe_fshoeush_r2",
+   "zone": "shoe",
+   "look": "ush",
+   "lookName": "Usher (the canon home look)",
+   "name": "Usher shoe",
+   "occupies": [
+    "shoe"
+   ],
+   "rank": 0,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "shoe",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fshoeush_r2.png",
+   "x": 495,
+   "y": 1846,
+   "w": 424,
+   "h": 138
+  },
+  {
+   "id": "probe_fshoewst_r2",
+   "zone": "shoe",
+   "look": "wst",
+   "lookName": "Western",
+   "name": "Western shoe",
+   "occupies": [
+    "shoe"
+   ],
+   "rank": 0,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "shoe",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fshoewst_r2.png",
+   "x": 482,
+   "y": 1772,
+   "w": 452,
+   "h": 218
+  },
+  {
+   "id": "probe_fshoespc_r2",
+   "zone": "shoe",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "Space opera shoe",
+   "occupies": [
+    "shoe"
+   ],
+   "rank": 0,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "shoe",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_fshoespc_r2.png",
+   "x": 463,
+   "y": 1770,
+   "w": 481,
+   "h": 213
+  },
+  {
+   "id": "probe_ehatush_r1",
+   "zone": "hat",
+   "look": "ush",
+   "lookName": "Usher (the canon home look)",
+   "name": "Usher hat",
+   "occupies": [
+    "hat"
+   ],
+   "rank": 4,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "hat",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ehatush_r1.png",
+   "x": 509,
+   "y": 205,
+   "w": 353,
+   "h": 228
+  },
+  {
+   "id": "probe_ehatwst_r1",
+   "zone": "hat",
+   "look": "wst",
+   "lookName": "Western",
+   "name": "Western hat",
+   "occupies": [
+    "hat"
+   ],
+   "rank": 4,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "hat",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ehatwst_r1.png",
+   "x": 357,
+   "y": 120,
+   "w": 684,
+   "h": 401
+  },
+  {
+   "id": "probe_ehatspc_r1",
+   "zone": "hat",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "Space opera hat",
+   "occupies": [
+    "hat"
+   ],
+   "rank": 4,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "hat",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ehatspc_r1.png",
+   "x": 513,
+   "y": 118,
+   "w": 364,
+   "h": 329
+  },
+  {
+   "id": "probe_etopush_r1",
+   "zone": "top",
+   "look": "ush",
+   "lookName": "Usher (the canon home look)",
+   "name": "Usher top",
+   "occupies": [
+    "top"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "top",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_etopush_r1.png",
+   "x": 292,
+   "y": 1137,
+   "w": 820,
+   "h": 517
+  },
+  {
+   "id": "probe_etopwst_r1",
+   "zone": "top",
+   "look": "wst",
+   "lookName": "Western",
+   "name": "Western top",
+   "occupies": [
+    "top"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "top",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_etopwst_r1.png",
+   "x": 288,
+   "y": 1136,
+   "w": 827,
+   "h": 515
+  },
+  {
+   "id": "probe_etopspc_r1",
+   "zone": "top",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "Space opera top",
+   "occupies": [
+    "top"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "top",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_etopspc_r1.png",
+   "x": 293,
+   "y": 1139,
+   "w": 817,
+   "h": 507
+  },
+  {
+   "id": "probe_ebotush_r1",
+   "zone": "bot",
+   "look": "ush",
+   "lookName": "Usher (the canon home look)",
+   "name": "Usher bot",
+   "occupies": [
+    "bot"
+   ],
+   "rank": 1,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "bot",
+    "keptBottom": null,
+    "holes": [],
+    "keyedPixels": 13241,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ebotush_r1.png",
+   "x": 465,
+   "y": 1620,
+   "w": 474,
+   "h": 291
+  },
+  {
+   "id": "probe_ebotwst_r1",
+   "zone": "bot",
+   "look": "wst",
+   "lookName": "Western",
+   "name": "Western bot",
+   "occupies": [
+    "bot"
+   ],
+   "rank": 1,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "bot",
+    "keptBottom": null,
+    "holes": [],
+    "keyedPixels": 11102,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ebotwst_r1.png",
+   "x": 463,
+   "y": 1620,
+   "w": 478,
+   "h": 291
+  },
+  {
+   "id": "probe_ebotspc_r1",
+   "zone": "bot",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "Space opera bot",
+   "occupies": [
+    "bot"
+   ],
+   "rank": 1,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "bot",
+    "keptBottom": null,
+    "holes": [
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 275,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 45,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 1408,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 596,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 140,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 40,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 30,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 40,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 35,
+      "protected": false,
+      "filled": true
+     }
+    ],
+    "keyedPixels": 11869,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_ebotspc_r1.png",
+   "x": 464,
+   "y": 1621,
+   "w": 476,
+   "h": 280
+  },
+  {
+   "id": "probe_eshoeush_r2",
+   "zone": "shoe",
+   "look": "ush",
+   "lookName": "Usher (the canon home look)",
+   "name": "Usher shoe",
+   "occupies": [
+    "shoe"
+   ],
+   "rank": 0,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "shoe",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_eshoeush_r2.png",
+   "x": 467,
+   "y": 1864,
+   "w": 470,
+   "h": 145
+  },
+  {
+   "id": "probe_eshoewst_r2",
+   "zone": "shoe",
+   "look": "wst",
+   "lookName": "Western",
+   "name": "Western shoe",
+   "occupies": [
+    "shoe"
+   ],
+   "rank": 0,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "shoe",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_eshoewst_r2.png",
+   "x": 471,
+   "y": 1764,
+   "w": 463,
+   "h": 219
+  },
+  {
+   "id": "probe_eshoespc_r2",
+   "zone": "shoe",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "Space opera shoe",
+   "occupies": [
+    "shoe"
+   ],
+   "rank": 0,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "shoe",
+    "keptBottom": null,
+    "keyedPixels": 0,
+    "hardLockedPixels": 0
+   },
+   "src": "parts/probe_eshoespc_r2.png",
+   "x": 457,
+   "y": 1760,
+   "w": 490,
+   "h": 249
+  },
+  {
+   "id": "probe_ftbspcjs_r1",
+   "zone": "tb",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "space-cadet jumpsuit",
+   "occupies": [
+    "top",
+    "bot"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Firefly 5",
+   "routeKey": "f",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "tb",
+    "keptBottom": null,
+    "holes": [
+     {
+      "area": 40,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 92,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 35,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 200,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 5060,
+      "protected": false,
+      "filled": false
+     },
+     {
+      "area": 881,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 3814,
+      "protected": false,
+      "filled": false
+     },
+     {
+      "area": 86,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 148,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 16701,
+      "protected": false,
+      "filled": false
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 56,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 50,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 624,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 118,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 823,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 49,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 164,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 111,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 202,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 100,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 95,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 81,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 1823,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 802,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 176,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 693,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 80,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 70,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 59,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 175,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 46,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 118,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     }
+    ],
+    "keyedPixels": 14450,
+    "hardLockedPixels": 64722
+   },
+   "src": "parts/probe_ftbspcjs_r1.png",
+   "x": 277,
+   "y": 1144,
+   "w": 850,
+   "h": 782
+  },
+  {
+   "id": "probe_etbspcjs_r1",
+   "zone": "tb",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "space-cadet jumpsuit",
+   "occupies": [
+    "top",
+    "bot"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "tb",
+    "keptBottom": null,
+    "holes": [
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 30,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 1352,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 15821,
+      "protected": false,
+      "filled": false
+     },
+     {
+      "area": 1273,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 264,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 73,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 692,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 13817,
+      "protected": false,
+      "filled": false
+     },
+     {
+      "area": 3477,
+      "protected": false,
+      "filled": false
+     },
+     {
+      "area": 4059,
+      "protected": false,
+      "filled": false
+     },
+     {
+      "area": 5785,
+      "protected": false,
+      "filled": false
+     },
+     {
+      "area": 1876,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 625,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 133,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 67,
+      "protected": false,
+      "filled": true
+     }
+    ],
+    "keyedPixels": 13166,
+    "hardLockedPixels": 64722
+   },
+   "src": "parts/probe_etbspcjs_r1.png",
+   "x": 302,
+   "y": 1141,
+   "w": 800,
+   "h": 741
+  },
+  {
+   "id": "probe_etbspcrb_r1",
+   "zone": "tb",
+   "look": "spc",
+   "lookName": "Space opera",
+   "name": "long flight robe",
+   "occupies": [
+    "top",
+    "bot"
+   ],
+   "rank": 2,
+   "weight": 1.0,
+   "route": "Nano Banana Pro",
+   "routeKey": "e",
+   "keptBottom": null,
+   "extraction": {
+    "zone": "tb",
+    "keptBottom": null,
+    "holes": [
+     {
+      "area": 45,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 46,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 158,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 96,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 617,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 285,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 46,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 424,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 287,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 46,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 92,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 69,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 62,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 35,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 436,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 96,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 342,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 501,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 277,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 373,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 360,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 82,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 297,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 35,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 160,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 151,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 40,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 141,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 134,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 625,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 280,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 544,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 434,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 216,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 73,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 111,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 51,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 124,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 58,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 83,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 485,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 40,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 1318,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 214,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 267,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 622,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 76,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 152,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 244,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 57,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 30,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 51,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 85,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 156,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 178,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 99,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 51,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 110,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 399,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 86,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 208,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 70,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 304,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 34,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 156,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 653,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 205,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 136,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 210,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 388,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 148,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 174,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 873,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 79,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 152,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 666,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 62,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 153,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 73,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 152,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 300,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 227,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 119,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 61,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 365,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 48,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 124,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 201,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 454,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 698,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 192,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 436,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 129,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 130,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 351,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 30,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 217,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 112,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 153,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 210,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 246,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 89,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 82,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 56,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 73,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 36,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 45,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 68,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 409,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 90,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 122,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 743,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 79,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 221,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 136,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 690,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 205,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 30,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 47,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 35,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 110,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 51,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 178,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 616,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 73,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 81,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 58,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 40,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 54,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 57,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 85,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 91,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 45,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 63,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 76,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 25,
+      "protected": false,
+      "filled": true
+     },
+     {
+      "area": 60,
+      "protected": false,
+      "filled": true
+     }
+    ],
+    "keyedPixels": 3712,
+    "hardLockedPixels": 64722
+   },
+   "src": "parts/probe_etbspcrb_r1.png",
+   "x": 297,
+   "y": 1139,
+   "w": 810,
+   "h": 781
+  }
+ ],
+ "excluded": [
+  {
+   "id": "probe_ftbspcrb_r1",
+   "reason": "Derek, 2026-11-04: rejected; the gold badge carries lettering (character bible tripwire), shirt collar instead of a stand collar, slightly open at the hem"
+  }
+ ]
+}

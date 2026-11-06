@@ -1,0 +1,303 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Echo's wardrobe</title><style>
+:root{color-scheme:dark}body{margin:0;background:#14161b;color:#e9e9ec;font:14px/1.4 system-ui,sans-serif}
+main{display:flex;gap:16px;padding:16px;align-items:flex-start;flex-wrap:wrap}
+#stage{position:relative;height:calc(100vh - 32px);max-height:1400px;aspect-ratio:1315/2160;background:#485270;overflow:hidden;flex:none}
+#stage img{position:absolute;pointer-events:none}#base{left:0;top:0;width:100%;height:100%}
+#side{flex:1;min-width:300px;max-width:900px}h1{font-size:20px;margin:0}h2{font-size:15px;margin:0 0 8px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.zone{background:#1d2027;border-radius:8px;padding:12px;margin:10px 0}
+button,select{background:#252932;color:inherit;border:1px solid #666;border-radius:6px;padding:7px;cursor:pointer;font:inherit}
+button:disabled{opacity:.45;cursor:default}.row{display:flex;gap:8px;overflow-x:auto}.opt{flex:none;width:125px;border:2px solid transparent}
+.opt.on{border-color:#f2c14e}.opt img{width:105px;height:95px;object-fit:contain;background:#485270}.occupied{color:#aaa}
+#status,.notice{color:#f2c14e}small{display:block;color:#aaa}@media(max-width:700px){#stage{height:auto;width:100%}}
+</style></head><body><main><div id="stage"><img id="base" src="base.png" alt="Echo, bare"></div>
+<div id="side"><h1>Echo's wardrobe</h1><p>Pick pieces, combine looks, or try a whole outfit.</p>
+<div class="bar"><label>Route <select id="route"><option value="all">All</option><option value="f">Firefly 5</option><option value="e">Prompt to edit</option></select></label>
+<label>Mixed looks <input id="q" type="range" min="0" max="1" step="0.05" value="0.5"><output id="qvalue">50%</output></label></div>
+<div class="bar"><button id="shuffle">Shuffle</button><button id="clear">Bare</button><button id="save">Save PNG</button></div>
+<div id="presets" class="bar"></div><p id="presetHint"></p><p id="status" role="status"></p><div id="zones"></div></div></main>
+<script>/* Wardrobe v3: shared state and sampling engine for the standalone page and Node tests. */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.Wardrobe = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const slots = Object.freeze(['shoe', 'bot', 'top', 'outer', 'hat']);
+  const looks = ['ush', 'wst', 'spc'];
+  const rank = s => slots.indexOf(s);
+  const blank = () => Object.fromEntries(slots.map(s => [s, null]));
+  const copy = x => JSON.parse(JSON.stringify(x));
+  function need(ok, message) { if (!ok) throw new Error(message); }
+  function finite(n, message) { need(typeof n === 'number' && Number.isFinite(n), message); return n; }
+  function routeKey(route) {
+    const names = {'Firefly 5': 'f', 'Prompt to edit': 'e', 'Nano Banana Pro': 'e', 'Nano Banana Pro (OpenRouter)': 'g'};
+    return names[route] || route;
+  }
+  function itemValid(p) {
+    need(p && typeof p.id === 'string' && p.id.length > 0, 'item needs stable ID');
+    need(Array.isArray(p.occupies) && p.occupies.length > 0 && new Set(p.occupies).size === p.occupies.length && p.occupies.every(s => slots.includes(s)), 'invalid occupied slots');
+    need(looks.includes(p.look), 'unknown look');
+    need(['f', 'e', 'g'].includes(routeKey(p.route)), 'unknown route');
+    finite(p.rank, 'invalid rank'); finite(p.weight, 'invalid weight');
+    need(p.weight > 0, 'item weight must be positive');
+    return p;
+  }
+  function catalog(items) {
+    const c = Object.create(null);
+    items.forEach(p => { itemValid(p); need(!c[p.id], 'duplicate item ID'); c[p.id] = Object.freeze({...copy(p), occupies: Object.freeze(p.occupies.slice())}); });
+    return Object.freeze(c);
+  }
+  function initial() { return {worn: blank(), last: blank(), notices: {}, route: 'all'}; }
+  function validate(state, c) {
+    slots.forEach(s => {
+      const id = state.worn[s];
+      need(id === null || (c[id] && c[id].occupies.includes(s)), 'invalid worn slot');
+      if (id !== null) c[id].occupies.forEach(t => need(state.worn[t] === id, 'partial item occupancy'));
+    });
+    return state;
+  }
+  function rowSlot(p) { return p.occupies.reduce((a, b) => rank(a) > rank(b) ? a : b); }
+  function wornList(state, c) {
+    validate(state, c);
+    return [...new Set(slots.map(s => state.worn[s]).filter(Boolean))].map(id => c[id])
+      .sort((a, b) => a.rank - b.rank || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  }
+  function snapshot(state, c) { return copy(wornList(state, c)); }
+  function restore(state, freed, c) {
+    slots.filter(s => freed.has(s)).forEach(s => {
+      if (state.worn[s] !== null || state.last[s] === null) return;
+      const p = c[state.last[s]];
+      if (p && p.occupies.length === 1 && p.occupies[0] === s) state.worn[s] = p.id;
+      else state.notices[s] = 'Remembered item is missing or incompatible';
+    });
+  }
+  function removeWhole(state, ids, c) {
+    const freed = new Set();
+    ids.forEach(id => { if (id) c[id].occupies.forEach(s => { state.worn[s] = null; freed.add(s); }); });
+    return freed;
+  }
+  function transaction(state, c, action) {
+    validate(state, c);
+    const n = copy(state); n.notices = {};
+    if (action.type === 'route') {
+      need(['all', 'f', 'e'].includes(action.route), 'invalid route filter');
+      n.route = action.route;
+      n.notices = copy(state.notices);
+    } else if (action.type === 'clear') { n.worn = blank(); n.last = blank(); }
+    else if (action.type === 'replace') {
+      need(Array.isArray(action.ids) && new Set(action.ids).size === action.ids.length, 'duplicate outfit ID');
+      n.worn = blank();
+      action.ids.forEach(id => {
+        need(c[id], 'missing outfit item: ' + id);
+        c[id].occupies.forEach(s => { need(n.worn[s] === null, 'outfit slot conflict'); n.worn[s] = id; });
+      });
+      slots.forEach(s => { const p = c[n.worn[s]]; if (!p) n.last[s] = null; else if (p.occupies.length === 1) n.last[s] = p.id; });
+    } else if (action.type === 'equip') {
+      const p = c[action.id]; need(p, 'missing equipped item');
+      if (p.occupies.every(s => n.worn[s] === p.id)) return state;
+      const freed = removeWhole(n, new Set(p.occupies.map(s => n.worn[s])), c);
+      p.occupies.forEach(s => { n.worn[s] = p.id; });
+      if (p.occupies.length === 1) n.last[p.occupies[0]] = p.id;
+      restore(n, freed, c);
+    } else if (action.type === 'bare' || action.type === 'remove') {
+      let s = action.slot;
+      if (action.type === 'remove') {
+        const p = c[action.id]; need(p, 'missing removed item');
+        if (!p.occupies.some(t => n.worn[t] === p.id)) return state;
+        if (p.occupies.length > 1) {
+          restore(n, removeWhole(n, new Set([p.id]), c), c);
+          return validate(n, c);
+        }
+        s = p.occupies[0];
+      }
+      need(slots.includes(s), 'invalid bare slot');
+      n.last[s] = null;
+      const freed = removeWhole(n, new Set([n.worn[s]]), c); freed.delete(s);
+      restore(n, freed, c);
+    } else throw new Error('unknown transaction');
+    return validate(n, c);
+  }
+  const presets = {
+    f: {
+      ush: ['probe_fhatush_r1','probe_ftopush_r1','probe_fbotush_r1','probe_fshoeush_r2'],
+      wst: ['probe_fhatwst_r1','probe_ftopwst_r1','probe_fbotwst_r1','probe_fshoewst_r2'],
+      spc: ['probe_fhatspc_r1','probe_ftopspc_r1','probe_fbotspc_r1','probe_fshoespc_r2'],
+      jumpsuit: ['probe_fhatspc_r1','probe_ftbspcjs_r1','probe_fshoespc_r2'],
+      robe: ['probe_fhatspc_r1','probe_ftbspcrb_r1','probe_fshoespc_r2']
+    },
+    e: {
+      ush: ['probe_ehatush_r1','probe_etopush_r1','probe_ebotush_r1','probe_eshoeush_r2'],
+      wst: ['probe_ehatwst_r1','probe_etopwst_r1','probe_ebotwst_r1','probe_eshoewst_r2'],
+      spc: ['probe_ehatspc_r1','probe_etopspc_r1','probe_ebotspc_r1','probe_eshoespc_r2'],
+      jumpsuit: ['probe_ehatspc_r1','probe_etbspcjs_r1','probe_eshoespc_r2'],
+      robe: ['probe_ehatspc_r1','probe_etbspcrb_r1','probe_eshoespc_r2']
+    }
+  };
+  function preset(c, route, name) {
+    if (route === 'all') return {reason: 'Choose a route for presets'};
+    const ids = presets[route] && presets[route][name];
+    if (!ids) return {reason: 'Unknown preset'};
+    try {
+      ids.forEach(id => { need(c[id], 'Missing preset item: ' + id); need(routeKey(c[id].route) === route, 'Preset route mismatch'); });
+      transaction(initial(), c, {type: 'replace', ids});
+      return {ids: ids.slice()};
+    } catch (e) { return {reason: "This outfit isn't available on this route", diagnostic: e.message}; }
+  }
+  function enumerate(c, config = {}) {
+    const route = config.route || 'all'; need(['all','f','e'].includes(route), 'invalid route filter');
+    const q = config.q === undefined ? 0.5 : config.q;
+    finite(q, 'invalid q'); need(q >= 0 && q <= 1, 'invalid q');
+    const bare = Object.fromEntries(slots.map(s => [s, 1]));
+    Object.entries(config.bare || {}).forEach(([s, w]) => { need(slots.includes(s), 'unknown bare slot'); finite(w, 'invalid bare weight'); need(w >= 0, 'negative bare weight'); bare[s] = w; });
+    const pairs = new Map();
+    const key = (a, b) => JSON.stringify([a, b].sort());
+    (config.pairs || []).forEach(p => {
+      need(Array.isArray(p) && p.length === 3 && c[p[0]] && c[p[1]] && p[0] !== p[1], 'invalid pair');
+      finite(p[2], 'invalid pair weight'); need(p[2] >= 0, 'negative pair weight');
+      const k = key(p[0], p[1]); need(!pairs.has(k), 'duplicate unordered pair'); pairs.set(k, p[2]);
+    });
+    const entries = slots.map(() => []);
+    Object.values(c).forEach(p => {
+      itemValid(p);
+      if (route === 'all' || routeKey(p.route) === route) entries[Math.min(...p.occupies.map(rank))].push(p);
+    });
+    entries.forEach(a => a.sort((a, b) => a.id < b.id ? -1 : 1));
+    const outfits = [], classes = {C: [], M: []}, totals = {C: 0, M: 0};
+    const product = (a, b) => finite(a * b, 'outfit weight overflow');
+    function visit(at, covered, picked, bareSlots) {
+      if (at === slots.length) {
+        let weight = 1;
+        picked.forEach(p => { weight = product(weight, p.weight); });
+        bareSlots.forEach(s => { weight = product(weight, bare[s]); });
+        for (let i = 0; i < picked.length; i++) for (let j = i + 1; j < picked.length; j++) {
+          const k = key(picked[i].id, picked[j].id);
+          weight = product(weight, pairs.has(k) ? pairs.get(k) : 1);
+        }
+        const diversity = new Set(picked.map(p => p.look)).size;
+        const group = diversity === 0 ? null : diversity === 1 ? 'C' : 'M';
+        const outfit = {ids: picked.map(p => p.id).sort(), weight, group}; outfits.push(outfit);
+        if (group && weight > 0) { classes[group].push(outfit); totals[group] = finite(totals[group] + weight, 'class total overflow'); }
+        return;
+      }
+      const s = slots[at];
+      if (covered.has(s)) return visit(at + 1, covered, picked, bareSlots);
+      // Bare is committed just like an item: later entries cannot reach back into it.
+      visit(at + 1, new Set([...covered, s]), picked, [...bareSlots, s]);
+      entries[at].forEach(p => {
+        if (p.occupies.every(s => !covered.has(s))) visit(at + 1, new Set([...covered, ...p.occupies]), [...picked, p], bareSlots);
+      });
+    }
+    visit(0, new Set(), [], []);
+    const total = finite(totals.C + totals.M, 'total weight overflow');
+    return {outfits, classes, totals, total, q, route, traversal: slots.slice()};
+  }
+  function sample(table, rng = Math.random) {
+    if (!(table.total > 0)) return {reason: 'Shuffle unavailable: no positive nonempty outfit weight'};
+    function random() { const u = rng(); finite(u, 'invalid random draw'); need(u >= 0 && u < 1, 'random draw outside [0,1)'); return u; }
+    let group, reason = '';
+    if (table.totals.C > 0 && table.totals.M > 0) group = random() < table.q ? 'M' : 'C';
+    else { group = table.totals.C > 0 ? 'C' : 'M'; reason = 'Only ' + (group === 'C' ? 'coherent' : 'mixed') + ' outfits have positive weight; using that class'; }
+    const target = random() * table.totals[group]; let sum = 0, lastPositive = null;
+    for (const outfit of table.classes[group]) {
+      sum += outfit.weight;
+      if (outfit.weight > 0) lastPositive = outfit;
+      if (sum > target) return {ids: outfit.ids.slice(), group, reason};
+    }
+    // Tiny/subnormal products can round u*Z up to Z although u < 1.
+    // Do not conceal an inconsistent table: the final cumulative sum must agree.
+    if (target === table.totals[group] && sum === table.totals[group] && lastPositive)
+      return {ids: lastPositive.ids.slice(), group, reason};
+    throw new Error('invalid cumulative weight');
+  }
+  async function exportSnapshot(list, load, ctx, base = 'base.png') {
+    // Capture records synchronously, before even the base image starts loading.
+    const saved = copy(list);
+    ctx.drawImage(await load(base), 0, 0);
+    for (const p of saved) ctx.drawImage(await load(p.src), p.x, p.y, p.w, p.h);
+    return saved;
+  }
+  return {slots, catalog, initial, validate, transaction, wornList, snapshot, rowSlot, routeKey, preset, presets, enumerate, sample, exportSnapshot};
+});
+</script>
+<script>
+'use strict';
+const M = {"version": 3, "size": [1315, 2160], "order": ["shoe", "bot", "top", "outer", "hat"], "looks": {"ush": "Usher (the canon home look)", "wst": "Western", "spc": "Space opera"}, "parts": [{"id": "probe_fhatush_r1", "zone": "hat", "look": "ush", "lookName": "Usher (the canon home look)", "name": "Usher hat", "occupies": ["hat"], "rank": 4, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "hat", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_fhatush_r1.png", "x": 422, "y": 156, "w": 583, "h": 405}, {"id": "probe_fhatwst_r1", "zone": "hat", "look": "wst", "lookName": "Western", "name": "Western hat", "occupies": ["hat"], "rank": 4, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "hat", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_fhatwst_r1.png", "x": 380, "y": 57, "w": 640, "h": 524}, {"id": "probe_fhatspc_r1", "zone": "hat", "look": "spc", "lookName": "Space opera", "name": "Space opera hat", "occupies": ["hat"], "rank": 4, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "hat", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_fhatspc_r1.png", "x": 465, "y": 99, "w": 501, "h": 410}, {"id": "probe_ftopush_r1", "zone": "top", "look": "ush", "lookName": "Usher (the canon home look)", "name": "Usher top", "occupies": ["top"], "rank": 2, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "top", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_ftopush_r1.png", "x": 265, "y": 1142, "w": 873, "h": 567}, {"id": "probe_ftopwst_r1", "zone": "top", "look": "wst", "lookName": "Western", "name": "Western top", "occupies": ["top"], "rank": 2, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "top", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_ftopwst_r1.png", "x": 281, "y": 1137, "w": 847, "h": 581}, {"id": "probe_ftopspc_r1", "zone": "top", "look": "spc", "lookName": "Space opera", "name": "Space opera top", "occupies": ["top"], "rank": 2, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "top", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_ftopspc_r1.png", "x": 274, "y": 1144, "w": 854, "h": 568}, {"id": "probe_fbotush_r1", "zone": "bot", "look": "ush", "lookName": "Usher (the canon home look)", "name": "Usher bot", "occupies": ["bot"], "rank": 1, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "bot", "keptBottom": null, "holes": [], "keyedPixels": 14421, "hardLockedPixels": 0}, "src": "parts/probe_fbotush_r1.png", "x": 470, "y": 1630, "w": 463, "h": 282}, {"id": "probe_fbotwst_r1", "zone": "bot", "look": "wst", "lookName": "Western", "name": "Western bot", "occupies": ["bot"], "rank": 1, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "bot", "keptBottom": null, "holes": [], "keyedPixels": 11077, "hardLockedPixels": 0}, "src": "parts/probe_fbotwst_r1.png", "x": 458, "y": 1628, "w": 486, "h": 285}, {"id": "probe_fbotspc_r1", "zone": "bot", "look": "spc", "lookName": "Space opera", "name": "Space opera bot", "occupies": ["bot"], "rank": 1, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "bot", "keptBottom": null, "holes": [{"area": 115, "protected": false, "filled": true}, {"area": 125, "protected": false, "filled": true}, {"area": 45, "protected": false, "filled": true}, {"area": 103, "protected": false, "filled": true}, {"area": 35, "protected": false, "filled": true}, {"area": 49, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}], "keyedPixels": 10672, "hardLockedPixels": 0}, "src": "parts/probe_fbotspc_r1.png", "x": 465, "y": 1646, "w": 476, "h": 266}, {"id": "probe_fshoeush_r2", "zone": "shoe", "look": "ush", "lookName": "Usher (the canon home look)", "name": "Usher shoe", "occupies": ["shoe"], "rank": 0, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "shoe", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_fshoeush_r2.png", "x": 495, "y": 1846, "w": 424, "h": 138}, {"id": "probe_fshoewst_r2", "zone": "shoe", "look": "wst", "lookName": "Western", "name": "Western shoe", "occupies": ["shoe"], "rank": 0, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "shoe", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_fshoewst_r2.png", "x": 482, "y": 1772, "w": 452, "h": 218}, {"id": "probe_fshoespc_r2", "zone": "shoe", "look": "spc", "lookName": "Space opera", "name": "Space opera shoe", "occupies": ["shoe"], "rank": 0, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "shoe", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_fshoespc_r2.png", "x": 463, "y": 1770, "w": 481, "h": 213}, {"id": "probe_ehatush_r1", "zone": "hat", "look": "ush", "lookName": "Usher (the canon home look)", "name": "Usher hat", "occupies": ["hat"], "rank": 4, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "hat", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_ehatush_r1.png", "x": 509, "y": 205, "w": 353, "h": 228}, {"id": "probe_ehatwst_r1", "zone": "hat", "look": "wst", "lookName": "Western", "name": "Western hat", "occupies": ["hat"], "rank": 4, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "hat", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_ehatwst_r1.png", "x": 357, "y": 120, "w": 684, "h": 401}, {"id": "probe_ehatspc_r1", "zone": "hat", "look": "spc", "lookName": "Space opera", "name": "Space opera hat", "occupies": ["hat"], "rank": 4, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "hat", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_ehatspc_r1.png", "x": 513, "y": 118, "w": 364, "h": 329}, {"id": "probe_etopush_r1", "zone": "top", "look": "ush", "lookName": "Usher (the canon home look)", "name": "Usher top", "occupies": ["top"], "rank": 2, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "top", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_etopush_r1.png", "x": 292, "y": 1137, "w": 820, "h": 517}, {"id": "probe_etopwst_r1", "zone": "top", "look": "wst", "lookName": "Western", "name": "Western top", "occupies": ["top"], "rank": 2, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "top", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_etopwst_r1.png", "x": 288, "y": 1136, "w": 827, "h": 515}, {"id": "probe_etopspc_r1", "zone": "top", "look": "spc", "lookName": "Space opera", "name": "Space opera top", "occupies": ["top"], "rank": 2, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "top", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_etopspc_r1.png", "x": 293, "y": 1139, "w": 817, "h": 507}, {"id": "probe_ebotush_r1", "zone": "bot", "look": "ush", "lookName": "Usher (the canon home look)", "name": "Usher bot", "occupies": ["bot"], "rank": 1, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "bot", "keptBottom": null, "holes": [], "keyedPixels": 13241, "hardLockedPixels": 0}, "src": "parts/probe_ebotush_r1.png", "x": 465, "y": 1620, "w": 474, "h": 291}, {"id": "probe_ebotwst_r1", "zone": "bot", "look": "wst", "lookName": "Western", "name": "Western bot", "occupies": ["bot"], "rank": 1, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "bot", "keptBottom": null, "holes": [], "keyedPixels": 11102, "hardLockedPixels": 0}, "src": "parts/probe_ebotwst_r1.png", "x": 463, "y": 1620, "w": 478, "h": 291}, {"id": "probe_ebotspc_r1", "zone": "bot", "look": "spc", "lookName": "Space opera", "name": "Space opera bot", "occupies": ["bot"], "rank": 1, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "bot", "keptBottom": null, "holes": [{"area": 25, "protected": false, "filled": true}, {"area": 275, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 45, "protected": false, "filled": true}, {"area": 1408, "protected": false, "filled": true}, {"area": 596, "protected": false, "filled": true}, {"area": 140, "protected": false, "filled": true}, {"area": 40, "protected": false, "filled": true}, {"area": 30, "protected": false, "filled": true}, {"area": 40, "protected": false, "filled": true}, {"area": 35, "protected": false, "filled": true}], "keyedPixels": 11869, "hardLockedPixels": 0}, "src": "parts/probe_ebotspc_r1.png", "x": 464, "y": 1621, "w": 476, "h": 280}, {"id": "probe_eshoeush_r2", "zone": "shoe", "look": "ush", "lookName": "Usher (the canon home look)", "name": "Usher shoe", "occupies": ["shoe"], "rank": 0, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "shoe", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_eshoeush_r2.png", "x": 467, "y": 1864, "w": 470, "h": 145}, {"id": "probe_eshoewst_r2", "zone": "shoe", "look": "wst", "lookName": "Western", "name": "Western shoe", "occupies": ["shoe"], "rank": 0, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "shoe", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_eshoewst_r2.png", "x": 471, "y": 1764, "w": 463, "h": 219}, {"id": "probe_eshoespc_r2", "zone": "shoe", "look": "spc", "lookName": "Space opera", "name": "Space opera shoe", "occupies": ["shoe"], "rank": 0, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "shoe", "keptBottom": null, "keyedPixels": 0, "hardLockedPixels": 0}, "src": "parts/probe_eshoespc_r2.png", "x": 457, "y": 1760, "w": 490, "h": 249}, {"id": "probe_ftbspcjs_r1", "zone": "tb", "look": "spc", "lookName": "Space opera", "name": "space-cadet jumpsuit", "occupies": ["top", "bot"], "rank": 2, "weight": 1.0, "route": "Firefly 5", "routeKey": "f", "keptBottom": null, "extraction": {"zone": "tb", "keptBottom": null, "holes": [{"area": 40, "protected": false, "filled": true}, {"area": 92, "protected": false, "filled": true}, {"area": 35, "protected": false, "filled": true}, {"area": 200, "protected": false, "filled": true}, {"area": 5060, "protected": false, "filled": false}, {"area": 881, "protected": false, "filled": true}, {"area": 3814, "protected": false, "filled": false}, {"area": 86, "protected": false, "filled": true}, {"area": 148, "protected": false, "filled": true}, {"area": 16701, "protected": false, "filled": false}, {"area": 25, "protected": false, "filled": true}, {"area": 56, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 50, "protected": false, "filled": true}, {"area": 624, "protected": false, "filled": true}, {"area": 118, "protected": false, "filled": true}, {"area": 823, "protected": false, "filled": true}, {"area": 49, "protected": false, "filled": true}, {"area": 164, "protected": false, "filled": true}, {"area": 111, "protected": false, "filled": true}, {"area": 202, "protected": false, "filled": true}, {"area": 100, "protected": false, "filled": true}, {"area": 95, "protected": false, "filled": true}, {"area": 81, "protected": false, "filled": true}, {"area": 1823, "protected": false, "filled": true}, {"area": 802, "protected": false, "filled": true}, {"area": 176, "protected": false, "filled": true}, {"area": 693, "protected": false, "filled": true}, {"area": 80, "protected": false, "filled": true}, {"area": 70, "protected": false, "filled": true}, {"area": 59, "protected": false, "filled": true}, {"area": 175, "protected": false, "filled": true}, {"area": 46, "protected": false, "filled": true}, {"area": 118, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}], "keyedPixels": 14450, "hardLockedPixels": 64722}, "src": "parts/probe_ftbspcjs_r1.png", "x": 277, "y": 1144, "w": 850, "h": 782}, {"id": "probe_etbspcjs_r1", "zone": "tb", "look": "spc", "lookName": "Space opera", "name": "space-cadet jumpsuit", "occupies": ["top", "bot"], "rank": 2, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "tb", "keptBottom": null, "holes": [{"area": 25, "protected": false, "filled": true}, {"area": 30, "protected": false, "filled": true}, {"area": 1352, "protected": false, "filled": true}, {"area": 15821, "protected": false, "filled": false}, {"area": 1273, "protected": false, "filled": true}, {"area": 264, "protected": false, "filled": true}, {"area": 73, "protected": false, "filled": true}, {"area": 692, "protected": false, "filled": true}, {"area": 13817, "protected": false, "filled": false}, {"area": 3477, "protected": false, "filled": false}, {"area": 4059, "protected": false, "filled": false}, {"area": 5785, "protected": false, "filled": false}, {"area": 1876, "protected": false, "filled": true}, {"area": 625, "protected": false, "filled": true}, {"area": 133, "protected": false, "filled": true}, {"area": 67, "protected": false, "filled": true}], "keyedPixels": 13166, "hardLockedPixels": 64722}, "src": "parts/probe_etbspcjs_r1.png", "x": 302, "y": 1141, "w": 800, "h": 741}, {"id": "probe_etbspcrb_r1", "zone": "tb", "look": "spc", "lookName": "Space opera", "name": "long flight robe", "occupies": ["top", "bot"], "rank": 2, "weight": 1.0, "route": "Nano Banana Pro", "routeKey": "e", "keptBottom": null, "extraction": {"zone": "tb", "keptBottom": null, "holes": [{"area": 45, "protected": false, "filled": true}, {"area": 46, "protected": false, "filled": true}, {"area": 158, "protected": false, "filled": true}, {"area": 96, "protected": false, "filled": true}, {"area": 617, "protected": false, "filled": true}, {"area": 285, "protected": false, "filled": true}, {"area": 46, "protected": false, "filled": true}, {"area": 424, "protected": false, "filled": true}, {"area": 287, "protected": false, "filled": true}, {"area": 46, "protected": false, "filled": true}, {"area": 92, "protected": false, "filled": true}, {"area": 69, "protected": false, "filled": true}, {"area": 62, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 35, "protected": false, "filled": true}, {"area": 436, "protected": false, "filled": true}, {"area": 96, "protected": false, "filled": true}, {"area": 342, "protected": false, "filled": true}, {"area": 501, "protected": false, "filled": true}, {"area": 277, "protected": false, "filled": true}, {"area": 373, "protected": false, "filled": true}, {"area": 360, "protected": false, "filled": true}, {"area": 82, "protected": false, "filled": true}, {"area": 297, "protected": false, "filled": true}, {"area": 35, "protected": false, "filled": true}, {"area": 160, "protected": false, "filled": true}, {"area": 151, "protected": false, "filled": true}, {"area": 40, "protected": false, "filled": true}, {"area": 141, "protected": false, "filled": true}, {"area": 134, "protected": false, "filled": true}, {"area": 625, "protected": false, "filled": true}, {"area": 280, "protected": false, "filled": true}, {"area": 544, "protected": false, "filled": true}, {"area": 434, "protected": false, "filled": true}, {"area": 216, "protected": false, "filled": true}, {"area": 73, "protected": false, "filled": true}, {"area": 111, "protected": false, "filled": true}, {"area": 51, "protected": false, "filled": true}, {"area": 124, "protected": false, "filled": true}, {"area": 58, "protected": false, "filled": true}, {"area": 83, "protected": false, "filled": true}, {"area": 485, "protected": false, "filled": true}, {"area": 40, "protected": false, "filled": true}, {"area": 1318, "protected": false, "filled": true}, {"area": 214, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 267, "protected": false, "filled": true}, {"area": 622, "protected": false, "filled": true}, {"area": 76, "protected": false, "filled": true}, {"area": 152, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 244, "protected": false, "filled": true}, {"area": 57, "protected": false, "filled": true}, {"area": 30, "protected": false, "filled": true}, {"area": 51, "protected": false, "filled": true}, {"area": 85, "protected": false, "filled": true}, {"area": 156, "protected": false, "filled": true}, {"area": 178, "protected": false, "filled": true}, {"area": 99, "protected": false, "filled": true}, {"area": 51, "protected": false, "filled": true}, {"area": 110, "protected": false, "filled": true}, {"area": 399, "protected": false, "filled": true}, {"area": 86, "protected": false, "filled": true}, {"area": 208, "protected": false, "filled": true}, {"area": 70, "protected": false, "filled": true}, {"area": 304, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 34, "protected": false, "filled": true}, {"area": 156, "protected": false, "filled": true}, {"area": 653, "protected": false, "filled": true}, {"area": 205, "protected": false, "filled": true}, {"area": 136, "protected": false, "filled": true}, {"area": 210, "protected": false, "filled": true}, {"area": 388, "protected": false, "filled": true}, {"area": 148, "protected": false, "filled": true}, {"area": 174, "protected": false, "filled": true}, {"area": 873, "protected": false, "filled": true}, {"area": 79, "protected": false, "filled": true}, {"area": 152, "protected": false, "filled": true}, {"area": 666, "protected": false, "filled": true}, {"area": 62, "protected": false, "filled": true}, {"area": 153, "protected": false, "filled": true}, {"area": 73, "protected": false, "filled": true}, {"area": 152, "protected": false, "filled": true}, {"area": 300, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 227, "protected": false, "filled": true}, {"area": 119, "protected": false, "filled": true}, {"area": 61, "protected": false, "filled": true}, {"area": 365, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 48, "protected": false, "filled": true}, {"area": 124, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 201, "protected": false, "filled": true}, {"area": 454, "protected": false, "filled": true}, {"area": 698, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 192, "protected": false, "filled": true}, {"area": 436, "protected": false, "filled": true}, {"area": 129, "protected": false, "filled": true}, {"area": 130, "protected": false, "filled": true}, {"area": 351, "protected": false, "filled": true}, {"area": 30, "protected": false, "filled": true}, {"area": 217, "protected": false, "filled": true}, {"area": 112, "protected": false, "filled": true}, {"area": 153, "protected": false, "filled": true}, {"area": 210, "protected": false, "filled": true}, {"area": 246, "protected": false, "filled": true}, {"area": 89, "protected": false, "filled": true}, {"area": 82, "protected": false, "filled": true}, {"area": 56, "protected": false, "filled": true}, {"area": 73, "protected": false, "filled": true}, {"area": 36, "protected": false, "filled": true}, {"area": 45, "protected": false, "filled": true}, {"area": 68, "protected": false, "filled": true}, {"area": 409, "protected": false, "filled": true}, {"area": 90, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 122, "protected": false, "filled": true}, {"area": 743, "protected": false, "filled": true}, {"area": 79, "protected": false, "filled": true}, {"area": 221, "protected": false, "filled": true}, {"area": 136, "protected": false, "filled": true}, {"area": 690, "protected": false, "filled": true}, {"area": 205, "protected": false, "filled": true}, {"area": 30, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 47, "protected": false, "filled": true}, {"area": 35, "protected": false, "filled": true}, {"area": 110, "protected": false, "filled": true}, {"area": 51, "protected": false, "filled": true}, {"area": 178, "protected": false, "filled": true}, {"area": 616, "protected": false, "filled": true}, {"area": 73, "protected": false, "filled": true}, {"area": 81, "protected": false, "filled": true}, {"area": 58, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 40, "protected": false, "filled": true}, {"area": 54, "protected": false, "filled": true}, {"area": 57, "protected": false, "filled": true}, {"area": 85, "protected": false, "filled": true}, {"area": 91, "protected": false, "filled": true}, {"area": 45, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 63, "protected": false, "filled": true}, {"area": 76, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 25, "protected": false, "filled": true}, {"area": 60, "protected": false, "filled": true}], "keyedPixels": 3712, "hardLockedPixels": 64722}, "src": "parts/probe_etbspcrb_r1.png", "x": 297, "y": 1139, "w": 810, "h": 781}], "excluded": [{"id": "probe_ftbspcrb_r1", "reason": "Derek, 2026-11-04: rejected; the gold badge carries lettering (character bible tripwire), shirt collar instead of a stand collar, slightly open at the hem"}]};
+const A = Wardrobe, C = A.catalog(M.parts), W = M.size[0], H = M.size[1];
+let state = A.initial(), table;
+const el = id => document.getElementById(id);
+const label = {hat:'Hat', outer:'Outer', top:'Top', bot:'Bottoms', shoe:'Shoes'};
+const presetNames = {ush:'Usher', wst:'Western', spc:'Space: separates', jumpsuit:'Space: jumpsuit', robe:'Space: robe'};
+function button(text, fn, parent) { const b = document.createElement('button'); b.textContent = text; b.onclick = fn; parent.appendChild(b); return b; }
+function act(action) {
+  try { state = A.transaction(state, C, action); render(); }
+  catch (e) { console.error('Wardrobe action failed', e); el('status').textContent = "Couldn't change this outfit. Please choose another item."; }
+}
+function rebuildSampler() {
+  try { table = A.enumerate(C, {route:state.route, q:Number(el('q').value)}); el('shuffle').disabled = table.total <= 0;
+    el('status').textContent = table.total > 0 ? '' : A.sample(table).reason;
+  } catch (e) { console.error('Wardrobe sampler failed', e); table = null; el('shuffle').disabled = true; el('status').textContent = "Shuffle isn't available. Please adjust the controls."; }
+}
+function render() {
+  // One unique rank-sorted list also supplies the save snapshot.
+  const list = A.snapshot(state, C);
+  document.querySelectorAll('#stage .part').forEach(im => im.remove());
+  list.forEach((p, i) => {
+    const im = document.createElement('img'); im.className = 'part'; im.src = p.src; im.alt = p.name;
+    Object.assign(im.style, {left:100*p.x/W+'%', top:100*p.y/H+'%', width:100*p.w/W+'%', height:100*p.h/H+'%', zIndex:10+i});
+    el('stage').appendChild(im);
+  });
+  el('zones').replaceChildren();
+  A.slots.slice().reverse().forEach(s => {
+    const box = document.createElement('div'); box.className = 'zone';
+    const heading = document.createElement('h2'); heading.textContent = label[s]; box.appendChild(heading);
+    const current = C[state.worn[s]];
+    if (current && A.rowSlot(current) !== s) {
+      const occupied = button('occupied by ' + current.name, () => act({type:'remove', id:current.id}), box);
+      occupied.className = 'occupied'; occupied.title = 'Remove item and restore remembered choices';
+    }
+    if (current) button('Remove item', () => act({type:'remove', id:current.id}), box);
+    if (state.notices[s]) { const n = document.createElement('p'); n.className = 'notice'; n.textContent = state.notices[s]; box.appendChild(n); }
+    const row = document.createElement('div'); row.className = 'row';
+    const bare = button('Bare', () => act({type:'bare', slot:s}), row); bare.className = 'opt' + (!current ? ' on' : '');
+    M.parts.filter(p => A.rowSlot(p) === s).forEach(p => {
+      const b = button('', () => act({type:'equip', id:p.id}), row); b.className = 'opt' + (state.worn[s] === p.id ? ' on' : '');
+      const im = document.createElement('img'); im.src = p.src; im.alt = ''; b.appendChild(im);
+      const text = document.createElement('div'); text.textContent = p.name + p.occupies.filter(t => t !== s).map(t => ' +' + label[t].toLowerCase()).join(''); b.appendChild(text);
+      const route = document.createElement('small'); route.textContent = A.routeKey(p.route) === 'e' ? 'Prompt to edit' : p.route; b.appendChild(route);
+    });
+    box.appendChild(row); el('zones').appendChild(box);
+  });
+  el('presets').replaceChildren();
+  el('presetHint').textContent = state.route === 'all' ? 'Choose a route for presets' : '';
+  Object.entries(presetNames).forEach(([key, name]) => {
+    const resolved = A.preset(C, state.route, key);
+    const b = button(name, () => act({type:'replace', ids:resolved.ids}), el('presets'));
+    const unavailable = state.route === 'all' ? resolved.reason : name + " isn't available on this route";
+    b.disabled = !resolved.ids; b.title = resolved.reason ? unavailable : name;
+    if (resolved.reason && state.route !== 'all') { const reason = document.createElement('small'); reason.textContent = unavailable; el('presets').appendChild(reason); }
+  });
+}
+el('route').onchange = () => { act({type:'route', route:el('route').value}); rebuildSampler(); };
+el('q').oninput = () => { el('qvalue').textContent = Math.round(Number(el('q').value)*100)+'%'; rebuildSampler(); };
+el('clear').onclick = () => act({type:'clear'});
+el('shuffle').onclick = () => {
+  if (!table) return;
+  try {
+    const chosen = A.sample(table);
+    if (chosen.ids) act({type:'replace', ids:chosen.ids});
+    el('status').textContent = chosen.reason || '';
+  } catch (e) { console.error('Wardrobe shuffle failed', e); el('status').textContent = "Shuffle isn't available. Please adjust the controls."; }
+};
+el('save').onclick = async () => {
+  try {
+    const saved = A.snapshot(state, C); // before any asynchronous image loading
+    const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H;
+    const load = src => new Promise((ok, bad) => { const im = new Image(); im.onload = () => ok(im); im.onerror = bad; im.src = src; });
+    await A.exportSnapshot(saved, load, canvas.getContext('2d'));
+    const names = saved.map(p => p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'garment');
+    const a = document.createElement('a'); a.download = 'echo_' + (names.join('_') || 'bare') + '.png'; a.href = canvas.toDataURL('image/png'); a.click();
+  } catch (e) { console.error('Wardrobe export failed', e); el('status').textContent = 'Save failed: image could not load or export.'; }
+};
+render(); rebuildSampler();
+</script></body></html>

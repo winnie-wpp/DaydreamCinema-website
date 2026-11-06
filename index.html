@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daydream Cinema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="#home" aria-label="Daydream Cinema home"><img src="assets/images/logo-ink.webp" alt="Daydream Cinema"></a>
+  <nav aria-label="Main">
+    <a href="#now-showing">Now showing</a>
+    <a href="#characters">Cast</a>
+    <a href="#worlds">Sets</a>
+    <a href="#cinema">Cinema</a>
+    <a href="#store">Shop</a>
+  </nav>
+  <span class="bag" aria-live="polite">Cart (<span id="bagCount">0</span>)</span>
+</header>
+
+<main>
+<section class="view" id="v-home">
+  <div class="wall" id="wall" aria-label="Theater boxes"></div>
+</section>
+
+<section class="view" id="v-now-showing">
+  <div class="pad">
+    <div class="feature">
+      <video id="heroVideo" muted loop playsinline autoplay aria-label="The Little Ronin preview"></video>
+      <div class="feature-info">
+        <p class="kicker">Featured tonight, Screen 1</p>
+        <h1 id="featTitle">The Little Ronin</h1>
+        <p class="desc">Echo takes the stage in a moonlit bamboo forest, and the cherry blossoms refuse to stay in the background.</p>
+        <div class="times" data-film="The Little Ronin">
+          <button class="time" type="button" aria-pressed="false">4:30 pm</button>
+          <button class="time" type="button" aria-pressed="false">7:00 pm</button>
+          <button class="time" type="button" aria-pressed="false">9:15 pm</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>Now showing</h2><p>Pick a time to save a seat</p></div>
+      <div class="films" id="films"></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-store">
+  <div class="pad"><div class="sec">
+    <div class="sec-head"><h2>Store</h2><p>Souvenirs from the lobby</p></div>
+    <div class="items" id="items"></div>
+  </div></div>
+</section>
+
+<section class="view" id="v-characters">
+  <div class="pad">
+    <div class="banner"><img src="assets/images/echo-mono-hero.webp" alt="Echo waving at Mono on the cinema screen">
+      <div class="banner-info"><h1>Echo &amp; Mono</h1><p>Twins from two different worlds, sharing the same seat at the movies.</p></div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>The twins</h2><p>Meet the leads</p></div>
+      <div class="twins">
+        <article class="twin"><div class="portrait"><img src="assets/characters/echo.webp" alt="Echo"></div>
+          <div><p class="role">Favorite genres: adventure, westerns, space</p><h3>Echo</h3><p>Echo wears every feeling on the outside. Laughs loudest, cheers at every chase and is usually the first one climbing onto the stage to join the heroes.</p>
+            <a class="time wardrobe-link" href="#wardrobe">Explore Echo’s wardrobe →</a></div></article>
+        <article class="twin"><div class="portrait"><img src="assets/characters/mono.webp" alt="Mono"></div>
+          <div><p class="role">Favorite genres: mysteries, noir, quiet dramas</p><h3>Mono</h3><p>Mono is quieter, watching from the back row and noticing what everyone else misses. The feelings run deep, and the best clues usually end up in Mono’s sketchbook.</p></div></article>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>The audience</h2><p>Six feelings who never miss a screening</p></div>
+      <div class="blobs" id="blobs"></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-wardrobe">
+  <div class="pad">
+    <div class="wardrobe-head">
+      <a class="back" href="#characters">← Back to cast</a>
+      <div><h1>Echo’s wardrobe</h1><p>Mix hats, tops, bottoms and boots from Echo’s usher, western and space looks.</p></div>
+    </div>
+    <!-- built by js/wardrobe.js on first visit, so the images only load when needed -->
+    <div class="wd" id="wd">
+      <div class="wd-stage" id="wd-stage"></div>
+      <div class="wd-side">
+        <div class="wd-bar">
+          <button class="time" id="wd-shuffle" type="button">Shuffle</button>
+          <button class="time" id="wd-clear" type="button">Bare</button>
+          <button class="time" id="wd-save" type="button">Save PNG</button>
+        </div>
+        <div class="wd-bar wd-settings">
+          <label>Route <select id="wd-route"><option value="all">All</option><option value="f">Firefly 5</option><option value="e">Prompt to edit</option></select></label>
+          <label>Mixed looks <input id="wd-q" type="range" min="0" max="1" step="0.05" value="0.5"><output id="wd-qvalue">50%</output></label>
+        </div>
+        <p class="wd-label">Whole outfits</p>
+        <div class="wd-bar" id="wd-presets"></div>
+        <p class="wd-hint" id="wd-presetHint"></p>
+        <p class="wd-status" id="wd-status" role="status"></p>
+        <div id="wd-zones"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-worlds">
+  <div class="worlds" id="worlds">
+    <div class="wlayer wout" id="wOutA"></div>
+    <div class="wlayer wout" id="wOutB"></div>
+    <canvas class="wlayer wcolor" id="wColor" aria-hidden="true"></canvas>
+    <p class="whint" id="wHint">Move your light to bring the world to life</p>
+    <div class="winfo">
+      <p class="wcount" id="wCount"></p>
+      <h1 id="wTitle"></h1>
+      <p class="wline" id="wLine"></p>
+    </div>
+    <div class="wnav">
+      <div class="wdots" id="wDots"></div>
+      <button class="time" type="button" id="wPrev" aria-label="Previous world">←</button>
+      <button class="time" type="button" id="wNext" aria-label="Next world">Next world →</button>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-cinema">
+  <div class="pad">
+    <div class="banner"><img src="assets/rooms/main-auditorium.webp" alt="The overgrown auditorium with the projector running">
+      <div class="banner-info"><h1>The Cinema</h1><p>Main Auditorium. Closed for years, still screening every night for an audience of two.</p></div>
+    </div>
+    <div class="sec intro">
+      <p>Moss grows through the red carpet, wildflowers fill the aisles and the projector still hums. Wherever Mono has wandered, the walls fade back into pencil lines, half built and half drawn.</p>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>Inside</h2><p>Stills from around the building</p></div>
+      <div class="stills">
+        <figure><img src="assets/rooms/entrance.webp" alt="Entrance"><figcaption><h3>Entrance</h3><p>The box office bell still rings. Old posters, children’s drawings and a case of lost-and-found toys wait for visitors who stopped coming.</p></figcaption></figure>
+        <figure><img src="assets/rooms/concession-stand.webp" alt="Concession Stand"><figcaption><h3>Concession Stand</h3><p>The popcorn machine still glows. Jars of Western Cactus Fruit, Space Star Candy, Jungle Berries and Ocean Pearls line the counter, with two aprons waiting for their shift.</p></figcaption></figure>
+        <figure><img src="assets/rooms/projection-booth.webp" alt="Projection Booth"><figcaption><h3>Projection Booth</h3><p>The heart of the building. The old projector beams through the little window into the auditorium, and a chalkboard keeps score of tonight’s genre votes.</p></figcaption></figure>
+        <figure class="wide"><img src="assets/rooms/box-seats.webp" alt="Two box seats turned into bedrooms, linked by a tin-can telephone"><figcaption><h3>Box Seats</h3><p>Two private boxes above the auditorium became the twins’ bedrooms, linked by a tin-can telephone and a little pulley basket for passing notes.</p></figcaption>
+          <div class="pair">
+            <div><img src="assets/rooms/echo-room.webp" alt="Echo’s room"><h4>Echo’s room</h4><p>Warm lamps, a heap of patchwork blankets and shelves crowded with film reels and keepsakes.</p></div>
+            <div><img src="assets/rooms/mono-room.webp" alt="Mono’s room"><h4>Mono’s room</h4><p>Quiet and blue. One lamp, a few smooth stones and a hand-lettered sign saying where home is.</p></div>
+          </div></figure>
+        <figure><img src="assets/rooms/film-vault.webp" alt="Film Vault"><figcaption><h3>Film Vault</h3><p>Shelves of film cans sorted into westerns, space and monsters, a hand-drawn map of the twins’ findings and a label maker that never rests.</p></figcaption></figure>
+        <figure><img src="assets/rooms/backstage.webp" alt="Backstage"><figcaption><h3>Backstage</h3><p>Costumes on a rolling rack, painted flats, sandbags on pulleys and a curtained trunk marked secret.</p></figcaption></figure>
+        <figure><img src="assets/rooms/rooftop.webp" alt="Rooftop"><figcaption><h3>Rooftop</h3><p>Up by the marquee, the twins keep a bench, a blanket, a telescope and a stack of paper planes. The pigeons are regulars.</p></figcaption></figure>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="tour"><div><h2>Walk the cinema in 3D</h2><p>An explorable tour of every room, from the entrance to the rooftop, is in production.</p></div><span class="time" aria-disabled="true">Coming soon</span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="pad" id="foot"><footer><span>Daydream Cinema</span></footer></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="js/wardrobe.js"></script>
+<script src="js/worlds.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
