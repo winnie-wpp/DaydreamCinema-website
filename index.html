@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Daydream Cinema</title>
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="apple-touch-icon" href="assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -52,7 +54,7 @@
 
 <section class="view" id="v-store">
   <div class="pad"><div class="sec">
-    <div class="sec-head"><h2>Store</h2><p>Souvenirs from the lobby</p></div>
+    <div class="sec-head"><h2>Shop</h2><p>Souvenirs from the lobby</p></div>
     <div class="items" id="items"></div>
   </div></div>
 </section>
@@ -66,14 +68,14 @@
       <div class="sec-head"><h2>The twins</h2><p>Meet the leads</p></div>
       <div class="twins">
         <article class="twin"><div class="portrait"><img src="assets/characters/echo.webp" alt="Echo"></div>
-          <div><p class="role">Favorite genres: adventure, westerns, space</p><h3>Echo</h3><p>Echo wears every feeling on the outside. Laughs loudest, cheers at every chase and is usually the first one climbing onto the stage to join the heroes.</p>
+          <div><p class="role">Favorite genres: adventure, westerns, space</p><h3 class="twin-name"><img src="assets/images/echo-logo.png" alt="Echo"></h3><p>Echo wears every feeling on the outside. Laughs loudest, cheers at every chase and is usually the first one climbing onto the stage to join the heroes.</p>
             <a class="time wardrobe-link" href="#wardrobe">Explore Echo’s wardrobe →</a></div></article>
         <article class="twin"><div class="portrait"><img src="assets/characters/mono.webp" alt="Mono"></div>
-          <div><p class="role">Favorite genres: mysteries, noir, quiet dramas</p><h3>Mono</h3><p>Mono is quieter, watching from the back row and noticing what everyone else misses. The feelings run deep, and the best clues usually end up in Mono’s sketchbook.</p></div></article>
+          <div><p class="role">Favorite genres: mysteries, noir, quiet dramas</p><h3 class="twin-name"><img src="assets/images/mono-logo.png" alt="Mono"></h3><p>Mono is quieter, watching from the back row and noticing what everyone else misses. The feelings run deep, and the best clues usually end up in Mono’s sketchbook.</p></div></article>
       </div>
     </div>
     <div class="sec">
-      <div class="sec-head"><h2>The audience</h2><p>Six feelings who never miss a screening</p></div>
+      <div class="sec-head"><h2>The emotional blobs</h2><p>Six feelings who never miss a screening</p></div>
       <div class="blobs" id="blobs"></div>
     </div>
   </div>
@@ -109,20 +111,23 @@
 </section>
 
 <section class="view" id="v-worlds">
-  <div class="worlds" id="worlds">
-    <div class="wlayer wout" id="wOutA"></div>
-    <div class="wlayer wout" id="wOutB"></div>
-    <canvas class="wlayer wcolor" id="wColor" aria-hidden="true"></canvas>
-    <p class="whint" id="wHint">Move your light to bring the world to life</p>
+  <div class="worlds" id="worlds" aria-roledescription="slideshow" aria-label="Sets">
+    <div class="wslide" id="wSlideA"><img alt=""><video muted loop playsinline preload="none"></video></div>
+    <div class="wslide" id="wSlideB"><img alt=""><video muted loop playsinline preload="none"></video></div>
     <div class="winfo">
       <p class="wcount" id="wCount"></p>
       <h1 id="wTitle"></h1>
       <p class="wline" id="wLine"></p>
     </div>
     <div class="wnav">
-      <div class="wdots" id="wDots"></div>
-      <button class="time" type="button" id="wPrev" aria-label="Previous world">←</button>
-      <button class="time" type="button" id="wNext" aria-label="Next world">Next world →</button>
+      <div class="wshots" id="wShots"></div>
+      <div class="wrow"><div class="wdots" id="wDots"></div><button class="time" type="button" id="wPrev" aria-label="Previous set">←</button><button class="time" type="button" id="wNext">Next set →</button></div>
+    </div>
+  </div>
+  <div class="pad">
+    <div class="sec">
+      <div class="sec-head"><h2>Every set</h2><p>Scroll sideways through each set’s stills</p></div>
+      <div class="set-list" id="setList"></div>
     </div>
   </div>
 </section>

@@ -10,7 +10,7 @@ Plain HTML, CSS and JavaScript. No build step.
   - `CELL_COUNT`, `CELLS`, `SCENES`: screening wall boxes and their videos
   - `BLOBS`, `ITEMS`: blob profiles and store items
 - `assets/`: images, posters, room stills, character cutouts, scene videos
-- `js/worlds.js`: the Sets tab (move your light to paint colour into a pencil sketch). Add a world to the `WORLDS` list and put its render in `assets/worlds/`. Optional `outline` = your own pencil version; otherwise one is generated (needs a local server).
+- `js/worlds.js`: the Sets tab, a full-screen slideshow. Each set plays its video full screen; its 3 renders are thumbnails to swap in a still; Next / arrow keys / swipe zoom to the next set. `#worlds/<slug>` links to one set. Each set lives in `assets/sets/<slug>/` as `shot-1..3.jpg`, `thumb-1..3.jpg` and `video.mp4`; add it to the `SETS` list with a title, "inspired by" and one line.
 - `assets/echo-wardrobe/1.0.0/`: Echo's wardrobe picker, copied unchanged from the echo-wardrobe handoff. Opened from the "Explore Echo's wardrobe" button on the Cast tab (`#wardrobe`). Don't edit files inside it; to update, copy in a new versioned folder and change the iframe `data-src` in `index.html`.
 
 ## Adding more theater boxes

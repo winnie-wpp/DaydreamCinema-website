@@ -61,7 +61,10 @@ h2{font-size:clamp(1.8rem,3.5vw,2.6rem)}
 .film .meta{color:var(--muted);font-size:.85rem;margin:0 0 .5rem}
 
 /* ===== theater wall ===== */
-.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,45vw),1fr));gap:6px;padding:6px;min-height:calc(100vh - 88px);align-content:start}
+/* 5 screens per row (3 on tablets, 2 on phones); 30 screens fill every row */
+.wall{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:6px;min-height:calc(100vh - 88px);align-content:start}
+@media (max-width:900px){.wall{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.wall{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .cell{position:relative;aspect-ratio:16/9;overflow:hidden;background:#050505;border:1px solid #1a1a1a;cursor:pointer;transition:filter .5s,opacity .5s}
 .cell video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.55);transition:filter .6s}
 .cell.open video{filter:brightness(1)}
@@ -85,6 +88,11 @@ h2{font-size:clamp(1.8rem,3.5vw,2.6rem)}
 /* ===== store / about ===== */
 .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2.4rem 1.4rem}
 .item .art{aspect-ratio:1;background:var(--card);display:grid;place-items:center;font-size:3rem;filter:grayscale(1);margin-bottom:.9rem}
+/* product photos: shown whole on a cream backdrop (photos are shot on white, some are wide) */
+.item .art.photo{filter:none;overflow:hidden;background:#f3efe6;display:block;position:relative}
+.item .art.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6%;mix-blend-mode:multiply;transition:transform .6s}   /* multiply turns a white photo background into the cream */
+.item:hover .art.photo img{transform:scale(1.03)}
+.item .desc{color:var(--muted);font-size:.9rem;margin:.3rem 0 0}
 .item h3{font-size:1.35rem}
 .item .row{display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;color:var(--muted)}
 .banner{max-width:none;margin:0 calc(-1*clamp(1rem,4vw,3rem));position:relative;height:min(56.25vw,78vh);overflow:hidden;background:#111}
@@ -102,6 +110,9 @@ h2{font-size:clamp(1.8rem,3.5vw,2.6rem)}
 .twin .portrait{aspect-ratio:4/5;display:grid;place-items:end center;overflow:hidden;background:radial-gradient(circle at 50% 40%,#2a2a2a,#0e0e0e 70%)}
 .twin .portrait img{height:90%;width:auto;object-fit:contain}
 .twin h3{font-size:2.2rem;margin-bottom:.5rem}
+/* custom Echo / Mono name logos, drawn in black so flipped to white like the site logo */
+.twin .twin-name{margin:.2rem 0 .8rem;line-height:0}
+.twin .twin-name img{height:clamp(3.2rem,5vw,4.6rem);width:auto;max-width:100%;object-fit:contain;filter:invert(1)}
 .twin p{color:#cfcfcf;margin:0}
 .twin .role{color:var(--muted);font-size:.85rem;margin-bottom:.3rem}
 .wardrobe-link{display:inline-block;margin-top:1.2rem}
@@ -147,11 +158,14 @@ h2{font-size:clamp(1.8rem,3.5vw,2.6rem)}
   /* on phones the figure pins to the top and the clothes scroll under it */
   .wd-stage{height:42vh;justify-self:center;z-index:2;box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax -1px)}
 }
-.blobs{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}
+/* the six feelings always fill the full row: 6 across, 3 on tablets, 2 on phones */
+.blobs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1rem}
+@media (max-width:900px){.blobs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.blobs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .blob{background:var(--card);padding:1rem;transition:background .3s}
 .blob:hover{background:#161616}
-.blob .pic{aspect-ratio:1;display:grid;place-items:center;margin-bottom:.8rem}
-.blob .pic img{max-width:88%;max-height:88%;transition:transform .4s}
+.blob .pic{aspect-ratio:1;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:.8rem}
+.blob .pic img{width:88%;height:88%;object-fit:contain;transition:transform .4s}   /* same box for every picture so the labels line up */
 .blob:hover .pic img{transform:translateY(-4px) scale(1.04)}
 .blob h3{font-size:1.35rem}
 .blob .feel{color:var(--fg);font-size:.78rem;margin:0 0 .15rem;opacity:.7}
@@ -172,41 +186,64 @@ h2{font-size:clamp(1.8rem,3.5vw,2.6rem)}
 .tour p{color:var(--muted);margin:.5rem 0 0}
 .tour .time{cursor:default;opacity:.6}
 
-/* ===== worlds tab (from daydream-worlds; --worlds-offset is set from the header height in main.js) ===== */
-#v-worlds .time{color:#fff}
-.worlds{position:relative;height:calc(100vh - var(--worlds-offset));min-height:440px;overflow:hidden;background:#ececec;touch-action:pan-y}
-.wlayer{position:absolute;inset:0;background-size:cover;background-position:center}
-.wout{transition:opacity .8s ease}
-.wout.fallback{filter:grayscale(1) contrast(.55) brightness(1.55)}
-.wcolor{width:100%;height:100%;transition:opacity .6s ease}
-.wcolor.drain{opacity:0}
-/* world change: old sketch zooms past the camera, the new one grows in from behind */
-.wout.wleave{z-index:1;animation:wLeave 1.3s cubic-bezier(.55,0,.35,1) forwards}
+/* ===== sets tab: full-screen slideshow (--worlds-offset = header height, set in main.js) ===== */
+.worlds{position:relative;height:calc(100vh - var(--worlds-offset));min-height:440px;overflow:hidden;background:#000;touch-action:pan-y}
+.wslide{position:absolute;inset:0}
+.wslide img,.wslide video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.wslide video{transition:opacity .5s}
+.wslide[data-still] video{opacity:0}
+.worlds::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(0deg,#000d 0%,#0007 28%,#0000 58%),linear-gradient(90deg,#0008 0%,#0000 45%)}
+/* changing set: old slide zooms past the camera, the new one grows in. Changing angle: crossfade */
+.wslide.wleave{z-index:1;animation:wLeave 1.3s cubic-bezier(.55,0,.35,1) forwards}
 @keyframes wLeave{to{transform:scale(1.35);filter:blur(10px);opacity:0}}
-.wout.wenter{animation:wEnter 1.3s cubic-bezier(.3,0,.2,1) both}
+.wslide.wenter{animation:wEnter 1.3s cubic-bezier(.3,0,.2,1) both}
 @keyframes wEnter{from{transform:scale(.88);opacity:0}to{transform:none;opacity:1}}
-/* title words rise in after the color returns */
+.wslide.wfadein{z-index:1;animation:wFadeIn .7s ease both}
+@keyframes wFadeIn{from{opacity:0}}
+/* text */
+.winfo{position:absolute;left:clamp(1.2rem,4vw,3rem);bottom:clamp(1.2rem,4vw,3rem);z-index:3;max-width:560px;pointer-events:none;transition:opacity .5s}
+.winfo.hide{opacity:0}
+.winfo h1{font-size:clamp(2.6rem,7vw,5.6rem);letter-spacing:-.01em}
+.wcount{color:#cfcfcf;font-size:.9rem;margin:0 0 .6rem}
+.wline{color:#d6d6d6;margin:.8rem 0 0;max-width:46ch}
 .winfo h1 span{display:inline-block;margin-right:.22em;animation:wRise .9s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(.15s + var(--i)*.09s)}
 .winfo .wcount,.winfo .wline{animation:wFade 1s ease both}
 .winfo .wline{animation-delay:.5s}
 @keyframes wRise{from{opacity:0;transform:translateY(.5em);filter:blur(6px)}}
 @keyframes wFade{from{opacity:0;transform:translateY(8px)}}
 .winfo.hide *{animation:none}
-@media (prefers-reduced-motion: reduce){.winfo h1 span,.winfo .wcount,.winfo .wline{animation:none}}
-.worlds::after{content:"";position:absolute;inset:auto 0 0;height:45%;background:linear-gradient(0deg,#000c,#0000);pointer-events:none}
-.whint{position:absolute;top:1.2rem;left:50%;transform:translateX(-50%);z-index:3;margin:0;font-size:.85rem;color:#1a1a1a;background:#ffffffcc;padding:.35rem .9rem;transition:opacity .8s;pointer-events:none}
-.whint.gone{opacity:0}
-.winfo{position:absolute;left:clamp(1.2rem,4vw,3rem);bottom:clamp(1.2rem,4vw,2.6rem);z-index:3;max-width:520px;pointer-events:none;transition:opacity .5s}
-.winfo.hide{opacity:0}
-.winfo h1{font-size:clamp(2.4rem,6vw,4.6rem)}
-.wcount{color:#d0d0d0;font-size:.85rem;margin:0 0 .4rem;font-variant-numeric:tabular-nums}
-.wline{color:#e2e2e2;margin:.6rem 0 0;max-width:44ch}
-.wnav{position:absolute;right:clamp(1.2rem,4vw,3rem);bottom:clamp(1.2rem,4vw,2.6rem);z-index:3;display:flex;align-items:center;gap:.6rem}
-.wnav .time{background:#0006;backdrop-filter:blur(6px)}
+/* controls */
+.wnav{position:absolute;right:clamp(1.2rem,4vw,3rem);bottom:clamp(1.2rem,4vw,3rem);z-index:4;display:flex;flex-direction:column;align-items:flex-end;gap:.8rem}
+.wrow{display:flex;align-items:center;gap:.6rem}
+.worlds .time{background:#0006;backdrop-filter:blur(6px)}
+.wshots{display:flex;gap:.4rem}
+.wshot{position:relative;width:84px;aspect-ratio:16/9;padding:0;border:1px solid #ffffff55;background:#000;cursor:pointer;opacity:.65;transition:opacity .2s,border-color .2s}
+.wshot img{width:100%;height:100%;object-fit:cover}
+.wshot span{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:.9rem;background:#0005}
+.wshot:hover{opacity:1}
+.wshot[aria-pressed="true"]{opacity:1;border-color:#fff;outline:1px solid #fff}
 .wdots{display:flex;gap:6px;margin-right:.6rem}
-.wdots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:#ffffff55;cursor:pointer}
+.wdots button{width:7px;height:7px;border-radius:50%;border:0;padding:0;background:#ffffff55;cursor:pointer}
 .wdots button[aria-current="true"]{background:#fff}
-@media (max-width:640px){.wnav{left:1.2rem;right:auto;bottom:auto;top:1.2rem}.whint{top:auto;bottom:45%}}
+@media (max-width:640px){.wnav{left:1.2rem;right:1.2rem;bottom:auto;top:1.2rem;align-items:flex-start}.wshot{width:62px}.wdots{display:none}}
+@media (prefers-reduced-motion: reduce){.winfo h1 span,.winfo .wcount,.winfo .wline{animation:none}}
+/* every set: a box per set, scroll sideways through its stills */
+.set-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.6rem 1.4rem}
+@media (max-width:760px){.set-list{grid-template-columns:1fr}}
+.set-box{position:relative}
+.set-strip{display:flex;aspect-ratio:16/9;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;background:var(--card);margin-bottom:.9rem}
+.set-strip::-webkit-scrollbar{display:none}
+.set-strip img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:start}
+.set-arrow{position:absolute;top:calc((100% - 4.2rem)/2);transform:translateY(-50%);width:2.2rem;height:2.2rem;border-radius:50%;border:1px solid #ffffff55;background:#0008;backdrop-filter:blur(6px);color:#fff;font:inherit;font-size:1.3rem;line-height:1;cursor:pointer;opacity:0;transition:opacity .2s}
+.set-arrow.prev{left:.8rem}.set-arrow.next{right:.8rem}
+.set-box:hover .set-arrow,.set-arrow:focus-visible{opacity:1}
+@media (hover:none){.set-arrow{display:none}}
+.set-meta{display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
+.set-meta h3{font-size:1.55rem}
+.set-meta a:hover h3{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+.set-count{color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.set-box p{color:var(--muted);font-size:.88rem;margin:.15rem 0 0}
 
 footer{max-width:1500px;margin:6rem auto 0;padding:2rem 0 3rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
 

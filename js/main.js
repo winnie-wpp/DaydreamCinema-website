@@ -20,10 +20,17 @@ const FILMS = [
 /* Home wall: number of theater boxes. Videos come from SCENES below and are spread evenly across the boxes. */
 const CELL_COUNT = 30;
 const CELLS = Array.from({length:CELL_COUNT}, (_, i) => ({label:`Screen ${String(i+1).padStart(2,"0")}`}));
+/* Shop items. Put product photos in assets/merch/ and add img:"assets/merch/file.webp" (optional desc:"one line").
+   Items without img show their emoji icon. */
 const ITEMS = [
-  {name:"Popcorn bucket", price:"$18", icon:"🍿"},{name:"Blob enamel pins", price:"$12", icon:"✨"},
-  {name:"Sticker sheet", price:"$6", icon:"🌀"},{name:"Ticket lanyard", price:"$10", icon:"🎟️"},
-  {name:"Marquee tote", price:"$24", icon:"👜"},{name:"Echo & Mono tee", price:"$32", icon:"👕"}
+  {name:"Echo plush keychain", price:"$16", img:"assets/merch/web/echo-plushies.jpg", desc:"Waving Echo with a velvet cape, tiny satchel and a Daydream Cinema tag."},
+  {name:"Echo tee", price:"$20", img:"assets/merch/web/echo-tshirt.png", desc:"Cream cotton. Small cinema logo on the front, Echo’s big western-space adventure on the back."},
+  {name:"Mono sketchbook", price:"$7", img:"assets/merch/web/mono-notebook.png", desc:"A black spiral sketchbook with Mono’s hand-drawn name. For your own clues."},
+  {name:"Daydream stickers", price:"$3", img:"assets/merch/web/daydream-stickers.png", desc:"A pair of round vinyl stickers with the little Daydream blob."},
+  {name:"Emotional blob pins", price:"$8", img:"assets/merch/web/blobs-pin.jpg", desc:"All six feelings in gold-edged enamel. Collect the whole audience."},
+  {name:"Blob bandana", price:"$9", img:"assets/merch/web/blobs-badana.jpg", desc:"Hot-pink silky square with the six blobs swirling around the middle."},
+  {name:"Popcorn & drink set", price:"$10", img:"assets/merch/web/daydream-popcorondrinks.jpg", desc:"A Daydream Cinema popcorn bucket and cup starring Echo, Mono and the blobs."},
+  {name:"Marquee light box", price:"$24", img:"assets/merch/web/daydream-lightbox.jpg", desc:"A little red marquee with glowing bulbs. Spell out your own Now Showing."}
 ];
 const BLOBS = [
   {name:"Spark", feel:"Joy", line:"Zooms around the room whenever a scene lands just right.", img:"assets/characters/blob-spark-joy.webp"},
@@ -76,7 +83,7 @@ $("films").innerHTML = FILMS.map(f=>`
   <h3>${f.title}</h3><p class="meta">${f.meta}</p><p class="blurb">${f.blurb}</p>${timesHTML(f.title,f.times)}</article>`).join("");
 $("blobs").innerHTML = BLOBS.map(b=>`<article class="blob"><div class="pic"><img src="${b.img}" alt="${b.name}"></div><p class="feel">${b.feel}</p><h3>${b.name}</h3><p>${b.line}</p></article>`).join("");
 $("items").innerHTML = ITEMS.map(i=>`
-  <div class="item"><div class="art">${i.icon}</div><h3>${i.name}</h3>
+  <div class="item"><div class="art${i.img?" photo":""}">${i.img?`<img src="${i.img}" alt="${i.name}" loading="lazy">`:i.icon}</div><h3>${i.name}</h3>${i.desc?`<p class="desc">${i.desc}</p>`:""}
   <div class="row"><span>${i.price}</span><button class="time add" type="button" data-name="${i.name}">Add to cart</button></div></div>`).join("");
 
 /* ===== wall ===== */
@@ -129,13 +136,14 @@ document.addEventListener("click",e=>{
 const VIEWS=["home","now-showing","characters","worlds","cinema","store","wardrobe"];
 const NAV_PARENT={wardrobe:"characters"};   /* sub-pages highlight their parent tab */
 function route(){
-  const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):"home";
+  const [base,sub]=location.hash.slice(1).split("/");   /* e.g. #worlds/neon-rain opens one set */
+  const v=VIEWS.includes(base)?base:"home";
   VIEWS.forEach(n=>$("v-"+n).classList.toggle("on",n===v));
-  $("foot").hidden = v==="home" || v==="worlds";   /* full-screen tabs */
+  $("foot").hidden = v==="home";   /* the home wall is full screen */
   const tab=NAV_PARENT[v]||v;
   document.querySelectorAll("nav a").forEach(a=>{if(a.getAttribute("href")==="#"+tab)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   if(v==="wardrobe") startWardrobe();
-  if(window.worldsView){ setWorldsOffset(); worldsView(v==="worlds"); }
+  if(window.worldsView){ setWorldsOffset(); worldsView(v==="worlds", sub); }
   v==="now-showing"?hero.play().catch(()=>{}):hero.pause();
   window.scrollTo(0,0);
 }
