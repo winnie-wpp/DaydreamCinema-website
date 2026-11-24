@@ -10,16 +10,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/trailer.css">
 </head>
 <body>
 <header>
   <a class="brand" href="#home" aria-label="Daydream Cinema home"><img src="assets/images/logo-ink.webp" alt="Daydream Cinema"></a>
   <nav aria-label="Main">
-    <a href="#now-showing">Now showing</a>
+    <a href="#now-showing">Showtime</a>
     <a href="#characters">Cast</a>
     <a href="#cinema">Cinema</a>
     <a href="#worlds">Sets</a>
     <a href="#store">Shop</a>
+    <a href="#trailer">Trailer</a>
   </nav>
   <span class="bag" aria-live="polite">Cart (<span id="bagCount">0</span>)</span>
 </header>
@@ -46,7 +48,7 @@
     </div>
 
     <div class="sec">
-      <div class="sec-head"><h2>Now showing</h2><p>Pick a time to save a seat</p></div>
+      <div class="sec-head"><h2>Showtime</h2><p>Pick a time to save a seat</p></div>
       <div class="films" id="films"></div>
     </div>
   </div>
@@ -161,6 +163,31 @@
     </div>
   </div>
 </section>
+
+<section class="view" id="v-trailer">
+  <!-- Trailer tab. Content lives in js/trailer-data.js, styles in css/trailer.css -->
+  <div id="trailer-page">
+    <div class="ts-stage" role="button" tabindex="0" aria-label="Play trailer">
+      <video class="ts-video" muted playsinline preload="metadata" hidden></video>
+      <p class="ts-placeholder">Trailer coming soon</p>
+      <div class="ts-dim"></div>
+      <span class="ts-icon" aria-hidden="true">
+        <svg class="ts-icon-play" width="18" height="18" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+        <svg class="ts-icon-pause" width="17" height="17" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>
+      </span>
+    </div>
+    <div class="pad ts-below">
+      <div class="sec ts-timeline" aria-label="Timeline: click a section to jump there">
+        <div class="ts-strip-scroll"><div class="ts-strip"><div class="ts-segments"></div><div class="ts-playhead" aria-hidden="true"></div></div></div>
+        <div class="ts-legend"></div>
+      </div>
+      <div class="sec ts-break" aria-live="polite">
+        <div class="sec-head"><div><p class="ts-label">Breakdown · how this section was made</p><h2 data-now-title></h2></div><p data-now-meta></p></div>
+        <div class="ts-steps"></div>
+      </div>
+    </div>
+  </div>
+</section>
 </main>
 
 <div class="pad" id="foot"><footer><span>Daydream Cinema</span></footer></div>
@@ -168,6 +195,8 @@
 
 <script src="js/wardrobe.js"></script>
 <script src="js/worlds.js"></script>
+<script src="js/trailer-data.js"></script>
+<script src="js/trailer.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

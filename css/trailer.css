@@ -1,0 +1,115 @@
+/* ===== Trailer tab =====
+   Matches the rest of the site: black, Instrument Serif headings, thin grey lines.
+   The player fills the screen like Sets. No control bar: hover dims the video and
+   shows a play / pause icon in the middle. Click to play or pause, double-click for full screen. */
+
+/* player */
+#trailer-page .ts-stage{position:relative;height:calc(100vh - var(--worlds-offset,90px));min-height:440px;background:#000;overflow:hidden;cursor:pointer;outline:none}
+#trailer-page .ts-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#trailer-page .ts-video[hidden],#trailer-page .ts-placeholder[hidden]{display:none}
+#trailer-page .ts-placeholder{position:absolute;inset:0;margin:0;display:grid;place-items:center;padding-top:150px;font-family:var(--serif);font-size:clamp(1.2rem,2vw,1.6rem);color:#3a3a3a}
+#trailer-page .ts-dim{position:absolute;inset:0;pointer-events:none;background:#000;opacity:0;transition:opacity .4s}
+
+
+/* the only control: a quiet icon in the middle */
+#trailer-page .ts-icon{position:absolute;left:clamp(1.2rem,4vw,3rem);bottom:clamp(1.2rem,4vw,3rem);width:52px;height:52px;border-radius:50%;border:1px solid #ffffff66;background:#0003;backdrop-filter:blur(6px);color:#fff;
+  display:grid;place-items:center;pointer-events:none;opacity:0;transform:scale(.9);transition:opacity .35s,transform .35s}
+#trailer-page .ts-stage:hover .ts-icon,#trailer-page .ts-stage:focus-visible .ts-icon{opacity:1;transform:scale(1)}
+#trailer-page .ts-icon svg{grid-area:1/1}
+#trailer-page .ts-icon-pause,#trailer-page.is-playing .ts-icon-play{display:none}
+#trailer-page.is-playing .ts-icon-pause{display:block}
+#trailer-page.is-playing .ts-stage{cursor:default}
+#trailer-page.is-playing .ts-stage:hover{cursor:pointer}
+
+/* timeline strip, right under the player with no heading */
+/* timeline + breakdown share exactly one screen under the player; the step cards take whatever height is left */
+#trailer-page .ts-below{height:calc(100vh - var(--worlds-offset,90px));min-height:560px;display:flex;flex-direction:column;padding-bottom:1.4rem}
+#trailer-page .ts-below .sec{width:100%;padding-top:1.6rem}
+#trailer-page .ts-timeline{flex:none}
+#trailer-page .ts-break{flex:1;min-height:0;display:flex;flex-direction:column}
+#trailer-page .ts-label{margin:0 0 .3rem;color:var(--muted);font-size:.8rem}
+#trailer-page .sec-head{align-items:flex-end;margin-bottom:1rem;padding-bottom:.7rem}
+#trailer-page .ts-break h2{font-size:clamp(1.5rem,2.4vw,2rem)}
+#trailer-page .ts-strip-scroll{overflow-x:auto;scrollbar-width:none}
+#trailer-page .ts-strip-scroll::-webkit-scrollbar{display:none}
+#trailer-page .ts-strip{position:relative;min-width:760px}
+#trailer-page .ts-segments{display:flex}
+#trailer-page .ts-seg{min-width:0;text-align:left;cursor:pointer;padding:0 2px .4rem;border:0;background:none;display:flex;flex-direction:column;gap:.5rem;font:inherit;color:var(--muted);transition:color .2s}
+#trailer-page .ts-seg:hover,#trailer-page .ts-seg.is-active{color:var(--fg)}
+#trailer-page .ts-tiles{display:flex;gap:2px;height:36px}
+#trailer-page .ts-tiles img{width:100%;height:100%;object-fit:cover;opacity:.6;transition:opacity .2s}
+#trailer-page .ts-seg:hover .ts-tiles img,#trailer-page .ts-seg.is-active .ts-tiles img{opacity:1}
+#trailer-page .ts-tile{flex:1 1 0;min-width:0;background:var(--card);transition:background .2s}
+#trailer-page .ts-seg.is-active .ts-tile{background:#1c1c1c}
+#trailer-page .ts-seg-bar{display:block;height:2px;opacity:.5}
+#trailer-page .ts-seg.is-active .ts-seg-bar{opacity:1}
+#trailer-page .ts-seg-name{font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#trailer-page .ts-seg-time{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:-.4rem}
+#trailer-page .ts-playhead{position:absolute;top:-6px;height:48px;width:1px;background:var(--fg);pointer-events:none;left:0}
+#trailer-page .ts-legend{display:flex;flex-wrap:wrap;gap:.3rem 1.4rem;margin-top:.7rem}
+#trailer-page .ts-legend-item{display:flex;align-items:center;gap:.45rem;font-size:.78rem;color:var(--muted)}
+#trailer-page .ts-dot{width:7px;height:7px;border-radius:50%}
+
+/* how each section was made: one row of folder-tab cards, the open one widens */
+#trailer-page .ts-steps{display:flex;gap:6px;flex:1;min-height:240px}
+#trailer-page .ts-step{position:relative;flex:0 0 170px;min-width:0;background:var(--card);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;
+  transition:flex-grow .55s cubic-bezier(.2,.7,.2,1),flex-basis .55s cubic-bezier(.2,.7,.2,1),background .2s}
+#trailer-page .ts-step:not(.open):hover{background:#161616}
+#trailer-page .ts-step.open{flex:1 1 0;cursor:default}
+#trailer-page .ts-step-head{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;padding:1.2rem 1.2rem .4rem;cursor:inherit;width:100%}
+#trailer-page .ts-step-head:focus-visible{outline:1px solid var(--fg);outline-offset:-4px}
+#trailer-page .ts-num{color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+#trailer-page .ts-step h3{font-size:1.4rem;line-height:1.1}
+#trailer-page .ts-tool{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;color:#bdbdbd;border:1px solid #ffffff33;border-radius:2px;padding:.2rem .55rem;margin-top:.3rem}
+#trailer-page .ts-tool-logo{width:14px;height:14px;object-fit:contain}
+#trailer-page .ts-plus{position:absolute;right:1rem;bottom:.9rem;font-size:1.4rem;line-height:1;color:var(--muted);transition:opacity .3s,transform .3s}
+#trailer-page .ts-step:hover .ts-plus{color:var(--fg)}
+#trailer-page .ts-step.open .ts-plus{opacity:0;transform:rotate(45deg)}
+#trailer-page .ts-visual{position:relative;flex:1;min-height:0;padding:1rem 1.6rem 1.6rem;display:flex;align-items:center;justify-content:center;color:#555;
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s}
+#trailer-page .ts-step.open .ts-visual{opacity:1;visibility:visible;transition:opacity .45s .3s,visibility 0s}
+#trailer-page .ts-shot{position:absolute;inset:1rem 1.6rem 1.6rem;width:calc(100% - 3.2rem);height:calc(100% - 2.6rem);object-fit:cover}
+
+#trailer-page .ts-grid{width:100%;max-width:min(640px,calc((100vh - 470px)*1.75));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#trailer-page .ts-cell,#trailer-page .ts-frame{aspect-ratio:16/9;background:#151515;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--muted)}
+#trailer-page .ts-nodes{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.6rem}
+#trailer-page .ts-node{border:1px solid #ffffff33;border-radius:2px;padding:.7rem 1rem;font-size:.85rem;color:var(--fg);background:#151515}
+#trailer-page .ts-arrow-r{flex:none;color:#555}
+#trailer-page .ts-pair{width:100%;max-width:min(620px,calc((100vh - 440px)*2.6));display:flex;align-items:center;gap:.8rem}
+#trailer-page .ts-pair .ts-arrow-r{margin-bottom:1.6rem}
+#trailer-page .ts-pair-side{flex:1;display:flex;flex-direction:column;gap:.5rem}
+#trailer-page .ts-pair-side span{font-size:.8rem;color:var(--muted);text-align:center}
+#trailer-page .ts-tracks{width:100%;max-width:640px;display:flex;flex-direction:column;gap:6px}
+#trailer-page .ts-track{display:flex;align-items:center;gap:.6rem}
+#trailer-page .ts-track>span{width:22px;font-size:.72rem;color:var(--muted)}
+#trailer-page .ts-track>div{flex:1;display:flex;gap:3px;height:24px}
+#trailer-page .ts-track>div span{display:flex;align-items:center;padding:0 .45rem;min-width:0;overflow:hidden;white-space:nowrap;font-size:.68rem;color:#ddd}
+/* clips made in the tool itself: tool color, dark text, a soft glow */
+#trailer-page .ts-track>div span.ts-hi{color:#0b0b14;font-weight:600;box-shadow:0 0 0 1px #ffffff55,0 0 14px #9999ff66}
+/* several before → after rows stacked; sized so two fit the card height */
+#trailer-page .ts-pairs{width:100%;display:flex;flex-direction:column;align-items:center;gap:.8rem}
+#trailer-page .ts-pairs .ts-pair{max-width:min(520px,calc((100vh - 500px)*1.6))}
+#trailer-page .ts-pairs .ts-pair .ts-arrow-r{margin-bottom:0}
+#trailer-page .ts-pairs .ts-pair:last-child .ts-arrow-r{margin-bottom:1.6rem}
+#trailer-page .ts-callout{display:flex;align-items:center;gap:.5rem;margin:.9rem 0 0 calc(22px + .6rem);font-size:.78rem;color:#cfcfcf}
+#trailer-page .ts-callout-dot{width:9px;height:9px;border-radius:2px;flex:none}
+/* real images / clips dropped into the boxes */
+#trailer-page .ts-cell,#trailer-page .ts-frame{position:relative;overflow:hidden}
+#trailer-page .ts-cell img,#trailer-page .ts-cell video,#trailer-page .ts-frame img,#trailer-page .ts-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#trailer-page .ts-cell-label{position:absolute;left:0;right:0;bottom:0;padding:.9rem .5rem .35rem;font-size:.7rem;color:#eee;background:linear-gradient(0deg,#000c,#0000)}
+#trailer-page .ts-prompt{width:100%;max-width:460px;border:1px solid #ffffff33;border-radius:2px;background:#151515;padding:.9rem 1rem;display:flex;align-items:center;gap:.8rem}
+#trailer-page .ts-prompt p{margin:0;flex:1;font-size:.9rem;color:#e8e8e8}
+#trailer-page .ts-send{width:28px;height:28px;flex:none;border-radius:50%;background:var(--fg);color:#000;display:grid;place-items:center}
+#trailer-page .ts-layers{width:100%;max-width:460px;display:flex;flex-direction:column;gap:4px}
+#trailer-page .ts-layer{display:flex;align-items:center;gap:.7rem;background:#151515;border:1px solid var(--line);padding:.55rem .8rem;font-size:.85rem;color:#e8e8e8}
+#trailer-page .ts-layer-dot{width:7px;height:7px;border-radius:50%}
+
+@media (max-width:760px){
+  #trailer-page .ts-below{height:auto;min-height:0}
+  #trailer-page .ts-steps{flex-direction:column;height:auto}
+  #trailer-page .ts-step{flex:none}
+  #trailer-page .ts-step:not(.open) .ts-visual{display:none}
+  #trailer-page .ts-step.open .ts-visual{min-height:240px;padding:1rem}
+  #trailer-page .ts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){#trailer-page *{transition:none!important}}

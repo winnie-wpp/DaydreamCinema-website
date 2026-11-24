@@ -133,7 +133,7 @@ document.addEventListener("click",e=>{
 });
 
 /* ===== routing ===== */
-const VIEWS=["home","now-showing","characters","worlds","cinema","store","wardrobe"];
+const VIEWS=["home","now-showing","characters","worlds","cinema","store","wardrobe","trailer"];
 const NAV_PARENT={wardrobe:"characters"};   /* sub-pages highlight their parent tab */
 function route(){
   const [base,sub]=location.hash.slice(1).split("/");   /* e.g. #worlds/neon-rain opens one set */
@@ -144,6 +144,7 @@ function route(){
   document.querySelectorAll("nav a").forEach(a=>{if(a.getAttribute("href")==="#"+tab)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   if(v==="wardrobe") startWardrobe();
   if(window.worldsView){ setWorldsOffset(); worldsView(v==="worlds", sub); }
+  if(window.trailerPause){ if(v==="trailer") trailerPlay(); else trailerPause(); }
   v==="now-showing"?hero.play().catch(()=>{}):hero.pause();
   window.scrollTo(0,0);
 }
