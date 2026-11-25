@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/trailer.css?v=3">
+<link rel="stylesheet" href="css/trailer.css?v=4">
 </head>
 <body>
 <header>
@@ -171,6 +171,10 @@
       <video class="ts-video" muted playsinline preload="metadata" hidden></video>
       <p class="ts-placeholder">Trailer coming soon</p>
       <div class="ts-dim"></div>
+      <button class="ts-sound" type="button" aria-label="Turn sound on" aria-pressed="false">
+        <svg class="ts-sound-off" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM16.5 9.5l5 5M21.5 9.5l-5 5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>
+        <svg class="ts-sound-on" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </button>
       <span class="ts-icon" aria-hidden="true">
         <svg class="ts-icon-play" width="18" height="18" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
         <svg class="ts-icon-pause" width="17" height="17" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>
@@ -196,7 +200,7 @@
 <script src="js/wardrobe.js"></script>
 <script src="js/worlds.js"></script>
 <script src="js/trailer-data.js?v=3"></script>
-<script src="js/trailer.js?v=3"></script>
+<script src="js/trailer.js?v=6"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

@@ -43,8 +43,8 @@
   //   clip: 'section.mp4' per section  for testing while editing; clips play back to back
   const hasVideo = !!D.video;
   let t = 0, playing = false, timer = null, activeId = null, cur = null;
-  video.muted = false;  // try with sound; if the browser blocks that (no click on the page yet) playWithSound() falls back to muted
-  const playWithSound = () => video.play().catch(() => { if (video.muted) return Promise.reject(); video.muted = true; return video.play(); });
+  video.muted = true;   // always starts silent; the speaker button in the corner turns sound on
+  const playWithSound = () => video.play();   // (name kept; sound is only ever turned on by the button)
   if (hasVideo) { video.src = D.video; video.hidden = false; holder.hidden = true; }
   const total = () => (hasVideo && isFinite(video.duration) && video.duration > 0 ? video.duration : simTotal);
   const segTime = () => (t / total()) * simTotal;   // scales section times if the real video is a different length
@@ -69,8 +69,7 @@
     b.appendChild(el('span', 'ts-seg-name', esc(s.short)));
     b.appendChild(el('span', 'ts-seg-time', fmt(s.start)));
     // clip mode jumps straight to this section; scaling s.start can round a hair into the previous one
-    // a click counts as permission for sound, so it unmutes too
-    b.addEventListener('click', () => { video.muted = false; hasVideo ? seek((s.start / simTotal) * total()) : seek(s.start, s); });
+    b.addEventListener('click', () => (hasVideo ? seek((s.start / simTotal) * total()) : seek(s.start, s)));
     $('.ts-segments').appendChild(b);
   });
 
@@ -286,8 +285,8 @@
 
   // click to play / pause, double-click for full screen (a short delay tells the two apart)
   let clickT = null;
-  // the video starts muted (browsers only allow silent autoplay), so the first click turns the sound on
-  const click = () => { if (!video.hidden && video.muted && playing) { video.muted = false; return; } toggle(); };
+  // click toggles play / pause; sound has its own button
+  const click = () => toggle();
   stage.addEventListener('click', () => { clearTimeout(clickT); clickT = setTimeout(click, 220); });
   stage.addEventListener('dblclick', () => {
     clearTimeout(clickT);
@@ -314,6 +313,33 @@
   // main.js calls these when you open or leave the tab: it plays by itself on arrival
   window.trailerPause = () => { if (playing) pause(); };
   window.trailerPlay = () => { if (!playing) play(); };
+
+  // sound button, bottom-right corner (the play icon sits bottom-left). Its own click never toggles play.
+  const soundBtn = $('.ts-sound');
+  const showSound = () => {
+    root.classList.toggle('is-muted', video.muted);
+    soundBtn.setAttribute('aria-pressed', String(!video.muted));
+    soundBtn.setAttribute('aria-label', video.muted ? 'Turn sound on' : 'Turn sound off');
+  };
+  soundBtn.addEventListener('click', (e) => { e.stopPropagation(); video.muted = !video.muted; showSound(); });
+  soundBtn.addEventListener('dblclick', (e) => e.stopPropagation());
+  soundBtn.addEventListener('keydown', (e) => e.stopPropagation());
+  showSound();
+
+  // scrolled down to the breakdown: pause, so the trailer doesn't run on into the next section unseen.
+  // Scrolling back up picks it up again, but only if it was the scroll that paused it.
+  let pausedByScroll = false;
+  let scrollQueued = false;
+  const checkScroll = () => {
+    scrollQueued = false;
+    if (root.offsetParent === null) return;                 // trailer tab not open
+    const r = stage.getBoundingClientRect();
+    const seen = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)) / (r.height || 1);
+    if (seen < 0.35) { if (playing) { pause(); pausedByScroll = true; } }
+    else if (pausedByScroll && seen > 0.6) { pausedByScroll = false; play(); }
+  };
+  addEventListener('scroll', () => { if (!scrollQueued) { scrollQueued = true; setTimeout(checkScroll, 120); } }, { passive: true });
+  stage.addEventListener('click', () => { pausedByScroll = false; });   // a manual play/pause wins
   // while testing with clips, start at the first section that has one instead of on black
   const first = hasVideo ? segs[0] : (segs.find((s) => s.clip) || segs[0]);
   t = first.start; enter(first);

@@ -161,3 +161,13 @@
 #trailer-page .ts-visual{height:var(--fit,var(--panel));overflow:visible}
 @media (max-width:760px){#trailer-page .ts-visual{height:auto}}
 #trailer-page .ts-stack img{aspect-ratio:32/9;object-fit:cover}
+/* sound button, bottom-right (play icon is bottom-left). Always visible so people find it; quieter once sound is on */
+#trailer-page .ts-sound{all:unset;box-sizing:border-box;position:absolute;right:clamp(1.2rem,4vw,3rem);bottom:clamp(1.2rem,4vw,3rem);width:44px;height:44px;border-radius:50%;
+  border:1px solid #ffffff66;background:#0003;backdrop-filter:blur(6px);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:2;transition:opacity .3s,background .2s}
+#trailer-page .ts-sound svg{grid-area:1/1}
+#trailer-page .ts-sound:hover{background:#0006}
+#trailer-page .ts-sound:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#trailer-page .ts-sound .ts-sound-on,#trailer-page.is-muted .ts-sound .ts-sound-off{display:block}
+#trailer-page .ts-sound .ts-sound-off,#trailer-page.is-muted .ts-sound .ts-sound-on{display:none}
+#trailer-page:not(.is-muted) .ts-sound{opacity:.55}
+#trailer-page:not(.is-muted) .ts-stage:hover .ts-sound{opacity:1}
