@@ -49,8 +49,8 @@ window.TRAILER_DATA = {
     'Reference preshow':            { color: '#B7B2C4', logo: null },
     'Reference study':              { color: '#B7B2C4', logo: null },
     'Python':                       { color: '#4FA3E0', logo: null },
-    'Python · SAM 3':               { color: '#4FA3E0', logo: null },
-    'Firefly · Python · AE · ffmpeg': { color: '#B7B2C4', logo: null },
+    'Python + SAM 3':               { color: '#4FA3E0', logo: null },
+    'Firefly, Python, AE, ffmpeg': { color: '#B7B2C4', logo: null },
     'ffmpeg':                       { color: '#7BD88F', logo: null }
   },
 
@@ -76,7 +76,7 @@ window.TRAILER_DATA = {
       ]
     },
     {
-      id: 'movie', short: 'Movie trailer', title: 'Movie trailer · Violet Snow', flow: 'graph', dur: 31.4, clip: 'assets/trailer/movietrailer_violetsnow.mp4',
+      id: 'movie', short: 'Movie trailer', title: 'Movie trailer: Violet Snow', flow: 'graph', dur: 31.4, clip: 'assets/trailer/movietrailer_violetsnow.mp4',
       thumbs: Array.from({ length: 8 }, (_, i) => 'assets/trailer/thumbs/movie-' + (i + 1) + '.jpg'),
       steps: [
         { kind: 'grid', title: 'Starter assets', tool: 'Firefly Graph',
@@ -139,7 +139,7 @@ window.TRAILER_DATA = {
       ]
     },
     {
-      id: 'psa', short: 'Policy PSA', title: 'Policy PSA · Five rules, one cinema', flow: 'aeref', dur: 23.375, clip: 'assets/trailer/psa/policy-psa.mp4',
+      id: 'psa', short: 'Policy PSA', title: 'Policy PSA: Five rules, one cinema', flow: 'aeref', dur: 23.375, clip: 'assets/trailer/psa/policy-psa.mp4',
       thumbs: Array.from({ length: 6 }, (_, i) => 'assets/trailer/thumbs/psa-' + (i + 1) + '.jpg'),
       // steps follow Week6-7/promo/policy_video_bts_screenshots (01 → 11), with the slides' own words
       steps: [
@@ -166,9 +166,9 @@ window.TRAILER_DATA = {
           { label: 'Echo / expressive motion', img: 'assets/trailer/psa/bts/ref-echo-2.jpg' },
           { label: 'Echo / layered texture', img: 'assets/trailer/psa/bts/ref-echo-3.jpg' }
         ] },
-        { title: 'How the film was made', tool: 'Firefly · Python · AE · ffmpeg', image: 'assets/trailer/psa/bts/pipeline.jpg',
+        { title: 'How the film was made', tool: 'Firefly, Python, AE, ffmpeg', image: 'assets/trailer/psa/bts/pipeline.jpg',
           note: 'From reference and storyboard to moving layers, music and the finished film.' },
-        { kind: 'grid', title: 'Separate the layers', tool: 'Python · SAM 3', captions: true,
+        { kind: 'grid', title: 'Separate the layers', tool: 'Python + SAM 3', captions: true,
           note: 'SAM 3 separates the artwork so each part can move on its own.', cells: [
           { label: 'Storyboard / original artwork', img: 'assets/trailer/psa/bts/layer-1.jpg' },
           { label: 'Character cut-out', img: 'assets/trailer/psa/bts/layer-2.jpg' },
@@ -189,7 +189,7 @@ window.TRAILER_DATA = {
       ]
     },
     {
-      id: 'promo', short: 'Daydream promo', title: "Daydream Cinema promo · That's Magic", flow: 'remake', dur: 30.03, clip: 'assets/trailer/promo/daydream-promo.mp4',
+      id: 'promo', short: 'Daydream promo', title: "Daydream Cinema promo: That's Magic", flow: 'remake', dur: 30.03, clip: 'assets/trailer/promo/daydream-promo.mp4',
       thumbs: Array.from({ length: 8 }, (_, i) => 'assets/trailer/thumbs/promo-' + (i + 1) + '.jpg'),
       // steps follow Week6-7/promo/thats_magic_bts_screenshots (01 → 11), with the slides' own words
       steps: [
@@ -217,7 +217,7 @@ window.TRAILER_DATA = {
           { label: 'Film look: add grain and soft edges', img: 'assets/trailer/promo/bts/stage-7.jpg' },
           { label: 'Finish: bring picture and sound together', img: 'assets/trailer/promo/bts/stage-8.jpg' }
         ] },
-        { title: 'How we built the spot', tool: 'Firefly · Python · AE · ffmpeg', image: 'assets/trailer/promo/bts/pipeline.jpg',
+        { title: 'How we built the spot', tool: 'Firefly, Python, AE, ffmpeg', image: 'assets/trailer/promo/bts/pipeline.jpg',
           note: 'Recreate the room, draw the characters, then bring the scene together.' },
         { kind: 'slides', title: 'Build the scenes', tool: 'After Effects', cells: [
           { label: 'Mono in the auditorium', sub: 'The room, the drawing and the light remain separate layers.', img: 'assets/trailer/promo/bts/ae-auditorium.jpg',

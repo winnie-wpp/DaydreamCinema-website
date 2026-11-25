@@ -171,3 +171,8 @@
 #trailer-page .ts-sound .ts-sound-off,#trailer-page.is-muted .ts-sound .ts-sound-on{display:none}
 #trailer-page:not(.is-muted) .ts-sound{opacity:.55}
 #trailer-page:not(.is-muted) .ts-stage:hover .ts-sound{opacity:1}
+/* workflow label under each timeline block (replaces the legend row); wraps instead of cutting off */
+#trailer-page .ts-legend{display:none}
+#trailer-page .ts-seg-flow{display:flex;align-items:flex-start;gap:.4rem;margin-top:-.2rem;font-size:.72rem;line-height:1.3;color:var(--muted);padding-right:.5rem}
+#trailer-page .ts-seg-flow .ts-dot{flex:none;margin-top:.3em}
+#trailer-page .ts-seg-flow{margin-top:0}

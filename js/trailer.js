@@ -67,15 +67,13 @@
     b.appendChild(tiles);
     const bar = el('span', 'ts-seg-bar'); bar.style.background = f.color; b.appendChild(bar);
     b.appendChild(el('span', 'ts-seg-name', esc(s.short)));
-    b.appendChild(el('span', 'ts-seg-time', fmt(s.start)));
+    // the workflow sits under its own block (no separate legend row)
+    if (f.name) b.appendChild(el('span', 'ts-seg-flow', '<span class="ts-dot" style="background:' + f.color + '"></span>' + esc(f.name)));
     // clip mode jumps straight to this section; scaling s.start can round a hair into the previous one
     b.addEventListener('click', () => (hasVideo ? seek((s.start / simTotal) * total()) : seek(s.start, s)));
     $('.ts-segments').appendChild(b);
   });
 
-  // legend: only the workflows that are used
-  $('.ts-legend').innerHTML = [...new Set(segs.map((s) => s.flow))].map((k) =>
-    '<span class="ts-legend-item"><span class="ts-dot" style="background:' + D.flows[k].color + '"></span>' + esc(D.flows[k].name) + '</span>').join('');
 
   // the little diagram for each step
   // note: one line from the BTS slide, shown above the step's images
@@ -170,7 +168,7 @@
   function renderPanel(s) {
     const f = D.flows[s.flow] || { name: '', color: '#888' };
     $$('[data-now-title]').forEach((n) => (n.textContent = s.title));
-    $('[data-now-meta]').textContent = f.name + ' · ' + fmt(s.start) + '–' + fmt(s.end) + (s.credit ? ' · ' + s.credit : '');
+    $('[data-now-meta]').textContent = f.name;   // just the workflow, no times
     // steps sit side by side like folder tabs; the open one widens to show its diagram
     // step names stack in the left column; the open step's visuals fill the fixed panel on the right
     $('.ts-steps').style.setProperty('--n', s.steps.length);
