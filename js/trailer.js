@@ -38,7 +38,8 @@
   //   clip: 'section.mp4' per section  for testing while editing; clips play back to back
   const hasVideo = !!D.video;
   let t = 0, playing = false, timer = null, activeId = null, cur = null;
-  video.muted = true;   // browsers only autoplay silent video; the first click turns the sound on
+  video.muted = false;  // try with sound; if the browser blocks that (no click on the page yet) playWithSound() falls back to muted
+  const playWithSound = () => video.play().catch(() => { if (video.muted) return Promise.reject(); video.muted = true; return video.play(); });
   if (hasVideo) { video.src = D.video; video.hidden = false; holder.hidden = true; }
   const total = () => (hasVideo && isFinite(video.duration) && video.duration > 0 ? video.duration : simTotal);
   const segTime = () => (t / total()) * simTotal;   // scales section times if the real video is a different length
@@ -53,13 +54,17 @@
     b.setAttribute('aria-label', 'Jump to ' + s.short);
     b.dataset.id = s.id;
     const tiles = el('span', 'ts-tiles');
-    if (s.thumb) tiles.innerHTML = '<img src="' + esc(s.thumb) + '" alt="">';
+    // thumbs: [...] = filmstrip frames, thumb: 'x.jpg' = one image
+    const frames = s.thumbs || (s.thumb ? [s.thumb] : null);
+    if (frames) tiles.innerHTML = frames.map((f) => '<span class="ts-tile"><img src="' + esc(f) + '" alt=""></span>').join('');
     else for (let i = 0; i < Math.max(1, Math.round(s.dur / 4)); i++) tiles.appendChild(el('span', 'ts-tile'));
     b.appendChild(tiles);
     const bar = el('span', 'ts-seg-bar'); bar.style.background = f.color; b.appendChild(bar);
     b.appendChild(el('span', 'ts-seg-name', esc(s.short)));
     b.appendChild(el('span', 'ts-seg-time', fmt(s.start)));
-    b.addEventListener('click', () => seek((s.start / simTotal) * total()));
+    // clip mode jumps straight to this section; scaling s.start can round a hair into the previous one
+    // a click counts as permission for sound, so it unmutes too
+    b.addEventListener('click', () => { video.muted = false; hasVideo ? seek((s.start / simTotal) * total()) : seek(s.start, s); });
     $('.ts-segments').appendChild(b);
   });
 
@@ -68,12 +73,34 @@
     '<span class="ts-legend-item"><span class="ts-dot" style="background:' + D.flows[k].color + '"></span>' + esc(D.flows[k].name) + '</span>').join('');
 
   // the little diagram for each step
+  // note: one line from the BTS slide, shown above the step's images
   function visual(step, color) {
-    if (step.image) return '<img class="ts-shot" src="' + esc(step.image) + '" alt="' + esc(step.title) + '">';
+    return (step.note ? '<p class="ts-note">' + esc(step.note) + '</p>' : '') + body(step, color);
+  }
+  // captions: true puts each image's label underneath it (Violet Snow keeps them hidden)
+  const fig = (inner, c, captions) => captions && c && c.label ? '<figure class="ts-fig">' + inner + '<figcaption>' + esc(c.label) + '</figcaption></figure>' : inner;
+  function body(step, color) {
+    if (step.image) return '<img class="ts-full" src="' + esc(step.image) + '" alt="' + esc(step.title) + '">';
     switch (step.kind) {
-      case 'grid':
-        // 4 boxes sit in one row; anything else wraps 3 to a row
-        return '<div class="ts-grid"' + ((step.cells || []).length === 4 ? ' style="grid-template-columns:repeat(4,minmax(0,1fr));max-width:min(900px,100%)"' : '') + '>' + (step.cells || []).map((c) => '<div class="ts-cell">' + cell(c) + '</div>').join('') + '</div>';
+      case 'stack':
+      {
+        // wide 32:9 images (reference | ours) at their own shape, no cropping; 3 or more go two to a row
+        const n = (step.cells || []).length || 1, cols = step.cols || (n >= 3 ? 2 : 1), rows = Math.ceil(n / cols);
+        return '<div class="ts-stack" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr));--r:' + ((cols * 32) / (rows * 9)).toFixed(3) + '">' +
+          (step.cells || []).map((c) => fig('<img src="' + esc(c.img) + '" alt="' + esc(c.label || '') + '">', c, step.captions)).join('') + '</div>';
+      }
+      case 'slides':
+        // After Effects screenshots with their numbered notes; changes every 7s, dots to pick one
+        return '<div class="ts-slides">' + (step.cells || []).map((c, i) =>
+          '<div class="ts-slide' + (i === 0 ? ' on' : '') + '"><img src="' + esc(c.img) + '" alt="' + esc(c.label || '') + '">' +
+            '<div class="ts-slide-text"><h4>' + esc(c.label || '') + '</h4>' + (c.sub ? '<p>' + esc(c.sub) + '</p>' : '') + (c.notes ? '<ol>' + c.notes.map((t) => '<li>' + esc(t) + '</li>').join('') + '</ol>' : '') + '</div></div>').join('') +
+          '<div class="ts-dots">' + (step.cells || []).map((c, i) => '<button type="button" class="' + (i === 0 ? 'on' : '') + '" aria-label="' + esc(c.label || 'Slide ' + (i + 1)) + '"></button>').join('') + '</div></div>';
+      case 'grid': {
+        // 4 or 8 boxes sit 4 to a row; anything else wraps 3 to a row (or step.cols)
+        const n = (step.cells || []).length || 1, cols = step.cols || ([4, 8].includes(n) ? 4 : 3), rows = Math.ceil(n / cols);
+        return '<div class="ts-grid' + (step.captions ? ' has-captions' : '') + '" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr));--r:' + ((cols * 16) / (rows * 9)).toFixed(3) + '">' +
+          (step.cells || []).map((c) => fig('<div class="ts-cell">' + cell(c) + '</div>', c, step.captions)).join('') + '</div>';
+      }
       case 'capsule':
         return '<div class="ts-nodes">' + (step.nodes || []).map((n, i, a) => '<div class="ts-node">' + esc(n) + '</div>' + (i < a.length - 1 ? arrowRight : '')).join('') + '</div>';
       case 'pair': {
@@ -81,9 +108,16 @@
         const row = (l, r, labels) => '<div class="ts-pair">' +
           '<div class="ts-pair-side"><div class="ts-frame">' + media(l) + '</div>' + (labels ? '<span>' + esc(l.label) + '</span>' : '') + '</div>' + arrowRight +
           '<div class="ts-pair-side"><div class="ts-frame">' + media(r) + '</div>' + (labels ? '<span>' + esc(r.label) + '</span>' : '') + '</div></div>';
-        if (!step.more) return row(step.left, step.right, true);
-        const rows = [{ left: step.left, right: step.right }, ...step.more];
-        return '<div class="ts-pairs">' + rows.map((p, i) => row(p.left, p.right, i === rows.length - 1)).join('') + '</div>';
+        // --r = width/height of all rows together (two 16:9 frames + arrow + labels), used to fill the card
+        const rows = [{ left: step.left, right: step.right }, ...(step.more || [])];
+        // cols: 2 lays the pairs out two to a row, each with its own labels
+        if (step.cols) {
+          // labels: false drops the captions under each frame (so more rows fit without scrolling)
+          const lines = Math.ceil(rows.length / step.cols), labels = step.labels !== false;
+          return '<div class="ts-pairs ts-pairs-grid' + (labels ? '' : ' no-labels') + '" style="grid-template-columns:repeat(' + step.cols + ',minmax(0,1fr));--r:' + (((labels ? 3.3 : 3.7) * step.cols) / lines).toFixed(3) + '">' +
+            rows.map((p) => row(p.left, p.right, labels)).join('') + '</div>';
+        }
+        return '<div class="ts-pairs" style="--r:' + (3.3 / rows.length).toFixed(3) + '">' + rows.map((p, i) => row(p.left, p.right, i === rows.length - 1)).join('') + '</div>';
       }
       case 'timeline': {
         const clip = (w, c, label, hi) => '<span' + (hi ? ' class="ts-hi"' : '') + ' style="flex:' + w + ' 1 0;background:' + c + '">' + (label ? esc(label) : '') + '</span>';
@@ -94,7 +128,7 @@
           const hiColor = (D.tools[step.tool] || {}).color || color;
           return '<div class="ts-tracks">' + step.tracks.map((tr) =>
             '<div class="ts-track"><span>' + esc(tr.id) + '</span><div>' + tr.clips.map(([label, w, hi], n) =>
-              clip(w, !label ? 'transparent' : hi ? hiColor : tr.accent ? color : fill[tr.id[0]][n % 2], label, hi)).join('') + '</div></div>').join('') +
+              clip(w, !label ? 'transparent' : hi ? hiColor : tr.accent ? color : (fill[tr.id[0]] || fill.V)[n % 2], label, hi)).join('') + '</div></div>').join('') +
             (step.callout ? '<p class="ts-callout"><span class="ts-callout-dot" style="background:' + hiColor + '"></span>' + esc(step.callout) + '</p>' : '') + '</div>';
         }
         return '<div class="ts-tracks">' +
@@ -133,20 +167,58 @@
     $$('[data-now-title]').forEach((n) => (n.textContent = s.title));
     $('[data-now-meta]').textContent = f.name + ' · ' + fmt(s.start) + '–' + fmt(s.end) + (s.credit ? ' · ' + s.credit : '');
     // steps sit side by side like folder tabs; the open one widens to show its diagram
-    $('.ts-steps').innerHTML = s.steps.map((step, i) =>
+    // step names stack in the left column; the open step's visuals fill the fixed panel on the right
+    $('.ts-steps').style.setProperty('--n', s.steps.length);
+    const card = (step, i) =>
       '<div class="ts-step' + (i === 0 ? ' open' : '') + '">' +
         '<button class="ts-step-head" type="button" aria-expanded="' + (i === 0) + '">' +
           '<span class="ts-num">' + String(i + 1).padStart(2, '0') + '</span><h3>' + esc(step.title) + '</h3>' + toolTag(step.tool) +
           '<span class="ts-plus" aria-hidden="true">+</span></button>' +
         '<div class="ts-visual">' + visual(step, f.color) + '</div>' +
-      '</div>').join('');
+      '</div>';
+    $('.ts-steps').innerHTML = s.steps.map(card).join('');
     playOpenClips();
+    fitPanel();
   }
+  // No scrolling inside the right panel: it is as tall as the section's tallest step (never shorter
+  // than the default), so it stays one fixed size while you click through that section's steps.
+  function fitPanel() {
+    const box = $('.ts-steps');
+    box.style.removeProperty('--fit');
+    if (matchMedia('(max-width:760px)').matches) return;   // phones stack everything, no fixed panel
+    const vis = [...box.querySelectorAll('.ts-visual')];
+    const open = box.querySelector('.ts-step.open .ts-visual');
+    let tallest = open ? open.offsetHeight : 0;   // the default fixed height
+    vis.forEach((v) => {
+      v.style.display = 'flex'; v.style.visibility = 'hidden'; v.style.height = 'auto';
+      tallest = Math.max(tallest, v.offsetHeight);
+      v.style.display = v.style.visibility = v.style.height = '';
+    });
+    box.style.setProperty('--fit', Math.ceil(tallest) + 'px');
+  }
+  // images change size as they load, and the window can be resized: measure again
+  $('.ts-steps').addEventListener('load', () => { clearTimeout(fitPanel.t); fitPanel.t = setTimeout(fitPanel, 60); }, true);
+  addEventListener('resize', () => { clearTimeout(fitPanel.t); fitPanel.t = setTimeout(fitPanel, 120); });
   $('.ts-steps').addEventListener('click', (e) => {
     const card = e.target.closest('.ts-step');
     if (!card || card.classList.contains('open')) return;
     $$('.ts-step').forEach((c) => { const on = c === card; c.classList.toggle('open', on); c.querySelector('.ts-step-head').setAttribute('aria-expanded', on); });
     playOpenClips();
+  });
+  // slides: step to the next screenshot every 3.5s in the open card
+  const showSlide = (box, k) => {
+    box.querySelectorAll('.ts-slide').forEach((m, n) => m.classList.toggle('on', n === k));
+    box.querySelectorAll('.ts-dots button').forEach((m, n) => m.classList.toggle('on', n === k));
+  };
+  setInterval(() => {
+    const box = root.querySelector('.ts-step.open .ts-slides');
+    if (!box || box.matches(':hover')) return;   // hold still while someone is reading
+    const all = [...box.querySelectorAll('.ts-slide')], i = all.findIndex((m) => m.classList.contains('on'));
+    showSlide(box, (i + 1) % all.length);
+  }, 7000);
+  root.addEventListener('click', (e) => {
+    const dot = e.target.closest('.ts-dots button');
+    if (dot) showSlide(dot.closest('.ts-slides'), [...dot.parentNode.children].indexOf(dot));
   });
   // clips inside the step cards loop silently, only in the card that's open
   function playOpenClips() {
@@ -161,7 +233,7 @@
     root.classList.toggle('is-playing', playing);
     stage.setAttribute('aria-label', playing ? 'Pause trailer' : 'Play trailer');
     const st = segTime();
-    const active = segs.find((s) => st >= s.start && st < s.end) || segs[segs.length - 1];
+    const active = (!hasVideo && cur) || segs.find((s) => st >= s.start && st < s.end) || segs[segs.length - 1];
     $$('.ts-seg').forEach((b) => b.classList.toggle('is-active', b.dataset.id === active.id));
     if (active.id !== activeId) { activeId = active.id; renderPanel(active); }
   }
@@ -173,7 +245,7 @@
     if (seg.clip) {
       video.hidden = false; holder.hidden = true;
       const at = Math.max(0, t - seg.start);
-      const go = () => { try { video.currentTime = at; } catch (_) {} if (playing) video.play().catch(() => {}); };
+      const go = () => { try { video.currentTime = at; } catch (_) {} if (playing) playWithSound().catch(() => {}); };
       if (video.dataset.src !== seg.clip) { video.dataset.src = seg.clip; video.src = seg.clip; video.addEventListener('loadedmetadata', go, { once: true }); }
       else go();
     } else {
@@ -188,14 +260,14 @@
     enter(segAt(t));
   }
 
-  function seek(sec) {
+  function seek(sec, seg) {
     t = Math.max(0, Math.min(sec, total() - 0.01));
     if (hasVideo) { video.currentTime = t; update(); }
-    else enter(segAt(t));
+    else enter(seg || segAt(t));
   }
   function play() {
     playing = true;
-    if (hasVideo) { if (t >= total() - 0.05) t = 0; video.currentTime = t; video.play().catch(() => { playing = false; update(); }); update(); }
+    if (hasVideo) { if (t >= total() - 0.05) t = 0; video.currentTime = t; playWithSound().catch(() => { playing = false; update(); }); update(); }
     else enter(segAt(t));
   }
   function pause() {
