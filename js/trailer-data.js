@@ -56,12 +56,23 @@ window.TRAILER_DATA = {
 
   segments: [
     {
-      id: 'ad', short: '[AD]', title: '[AD TITLE]', flow: 'live', dur: 12,
+      id: 'ad', short: 'Preshow ad', title: 'Preshow ad', flow: 'live', dur: 19.64, clip: 'assets/trailer/ad/kitkat.mp4',
+      thumbs: Array.from({ length: 5 }, (_, i) => 'assets/trailer/thumbs/ad-' + (i + 1) + '.jpg'),
       steps: [
-        { kind: 'pair', title: 'Shoot', tool: 'Live footage', left: { label: 'Public space', icon: 'person' }, right: { label: 'Raw clip', icon: 'play' } },
-        { kind: 'pair', title: 'Remove people', tool: 'Premiere', left: { label: 'With people', icon: 'person' }, right: { label: 'Clean plate', icon: 'empty' } },
-        { kind: 'pair', title: 'Generate character', tool: 'Firefly Graph / Boards', left: { label: 'Character', icon: 'character' }, right: { label: 'Animated clip', icon: 'play' } },
-        { kind: 'timeline', title: 'Composite + edit', tool: 'Premiere' }
+        { title: 'Select a person', tool: 'Premiere', image: 'assets/trailer/ad/bts/remove-1.jpg',
+          note: 'Click someone and Premiere outlines them.' },
+        { title: 'Select the crowd + track', tool: 'Premiere', image: 'assets/trailer/ad/bts/remove-3.jpg',
+          note: 'Select everyone, then Track follows them through the shot.' },
+        { kind: 'grid', title: 'Generative Remove', tool: 'Premiere', cols: 2,
+          note: 'Remove fills in what was behind them.', cells: [
+          { label: 'Removing one person', img: 'assets/trailer/ad/bts/remove-2.jpg' },
+          { label: 'Removing the crowd', img: 'assets/trailer/ad/bts/remove-4.jpg' }
+        ] },
+        { kind: 'pair', title: 'Before → after', tool: 'Premiere', note: 'Same shot, crowd gone.',
+          left: { label: 'Before', img: 'assets/trailer/ad/bts/before.jpg' },
+          right: { label: 'After', img: 'assets/trailer/ad/bts/after.jpg' } },
+        { title: 'Color mode', tool: 'Premiere', image: 'assets/trailer/ad/bts/color-mode.jpg',
+          note: 'Exposure, temperature, saturation and detail in one panel.' }
       ]
     },
     {
@@ -102,7 +113,7 @@ window.TRAILER_DATA = {
       ]
     },
     {
-      id: 'studio', short: 'Studio card', title: 'Studio presents', flow: 'assist', dur: 5.04, clip: 'assets/trailer/studio/hex-present.mp4',
+      id: 'studio', short: 'Studio presents', title: 'Studio presents', flow: 'assist', dur: 5.04, w: 17, clip: 'assets/trailer/studio/hex-present.mp4',
       thumbs: ['assets/trailer/thumbs/studio-1.jpg'],
       steps: [
         { kind: 'pair', title: 'Logo to light dots', tool: 'After Effects + AI Assistant', left: { label: 'Logo PNG', img: 'assets/trailer/studio/hex-logo.jpg' }, right: { label: 'Light dots', img: 'assets/trailer/studio/hex-dots.jpg' } },
@@ -111,13 +122,20 @@ window.TRAILER_DATA = {
       ]
     },
     {
-      id: 'series', short: 'Series trailer', title: 'Series trailer · [SERIES TITLE]', flow: 'mix', dur: 75.1, clip: 'assets/trailer/series-trailer.mp4',
-      thumbs: Array.from({ length: 19 }, (_, i) => 'assets/trailer/thumbs/series-' + (i + 1) + '.jpg'),
+      id: 'series', short: 'Series trailer', title: 'Series trailer', flow: 'mix', dur: 72.43, clip: 'assets/trailer/series-trailer.mp4?v=2',
+      thumbs: Array.from({ length: 18 }, (_, i) => 'assets/trailer/thumbs/series-' + (i + 1) + '.jpg?v=2'),
       steps: [
-        { kind: 'layers', title: 'Characters', tool: 'Boards Elements', cells: ['Character A', 'Character B', 'Character C'] },
-        { kind: 'grid', title: 'Environments', tool: 'Firefly Graph', cells: ['', '', '', '', '', ''] },
-        { kind: 'pair', title: 'Composite + video', tool: 'Firefly Boards', left: { label: 'Character + set', icon: 'layers' }, right: { label: 'Clip', icon: 'play' } },
-        { kind: 'timeline', title: 'Edit', tool: 'Premiere' }
+        { kind: 'grid', title: 'Environments', tool: 'Firefly',
+          note: 'The worlds the series travels through.',
+          cells: [1, 2, 3, 4, 5, 6].map((n) => ({ label: 'Environment ' + n, img: 'assets/trailer/series/bts/env/env-' + n + '.jpg' })) },
+        { title: 'Generative Extend', tool: 'Premiere', image: 'assets/trailer/series/bts/gen-extend.jpg',
+          note: 'Generate extra footage with Veo 3.1, right in the timeline.' },
+        { title: 'Soundscape', tool: 'Premiere', image: 'assets/trailer/series/bts/soundscape.jpg',
+          note: 'Describe the ambience; Premiere generates it.' },
+        { title: 'Sound effects', tool: 'Premiere', image: 'assets/trailer/series/bts/sfx.jpg',
+          note: 'Type “car crash explosion”, sync it to the cut.' },
+        { title: 'Final mix', tool: 'Premiere', image: 'assets/trailer/series/bts/timeline.jpg',
+          note: 'Clips, sound effects, ambience and music on their own tracks.' }
       ]
     },
     {

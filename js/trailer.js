@@ -28,6 +28,11 @@
   let acc = 0;
   const segs = D.segments.map((s) => { const o = { ...s, start: acc, end: acc + s.dur }; acc += s.dur; return o; });
   const simTotal = acc;
+  // w: optional display width for a block (e.g. a short card that needs room for its name).
+  // Timing stays real; the playhead just moves faster or slower across that block.
+  const width = (s) => s.w || s.dur;
+  const totalW = segs.reduce((n, s) => n + width(s), 0);
+  const posOf = (sec) => { let x = 0; for (const s of segs) { if (sec < s.end) return (x + Math.max(0, sec - s.start) / s.dur * width(s)) / totalW; x += width(s); } return 1; };
 
   // player
   const stage = $('.ts-stage');
@@ -50,7 +55,8 @@
     const f = D.flows[s.flow] || { color: '#888' };
     const b = el('button', 'ts-seg');
     b.type = 'button';
-    b.style.flex = s.dur + ' 1 0';
+    b.style.flex = width(s) + ' 1 0';
+    if (s.w) b.style.minWidth = '128px';   // widened blocks always have room for their name
     b.setAttribute('aria-label', 'Jump to ' + s.short);
     b.dataset.id = s.id;
     const tiles = el('span', 'ts-tiles');
@@ -229,7 +235,7 @@
   }
 
   function update() {
-    $('.ts-playhead').style.left = Math.min(100, (t / total()) * 100) + '%';
+    $('.ts-playhead').style.left = Math.min(100, posOf(segTime()) * 100) + '%';
     root.classList.toggle('is-playing', playing);
     stage.setAttribute('aria-label', playing ? 'Pause trailer' : 'Play trailer');
     const st = segTime();
