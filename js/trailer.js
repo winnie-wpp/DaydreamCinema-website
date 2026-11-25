@@ -152,7 +152,8 @@
   function media(o, size) {
     if (o && o.video) return '<video src="' + esc(o.video) + '"' + (o.poster ? ' poster="' + esc(o.poster) + '"' : '') + ' muted loop playsinline preload="metadata"></video>';
     // pos: 'top' keeps the top of a tall image (faces) when it's cropped to the box
-    if (o && o.img) return '<img src="' + esc(o.img) + '" alt="' + esc(o.label || '') + '" loading="lazy"' + (o.pos ? ' style="object-position:center ' + esc(o.pos) + '"' : '') + '>';
+    // fit: 'contain' shows the whole image (tall character art) instead of cropping it to the box
+    if (o && o.img) return '<img src="' + esc(o.img) + '" alt="' + esc(o.label || '') + '" loading="lazy" style="' + (o.pos ? 'object-position:center ' + esc(o.pos) + ';' : '') + (o.fit ? 'object-fit:' + esc(o.fit) + ';' : '') + '">';
     return icon((o && o.icon) || 'img', size);
   }
   // grid box: 'Label', or { label, img } / { label, video }

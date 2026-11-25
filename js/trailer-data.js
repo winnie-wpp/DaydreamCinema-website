@@ -31,7 +31,8 @@ window.TRAILER_DATA = {
     assist: { name: 'AE + AI Assistant',          color: '#F2D35B' },
     mix:    { name: 'Elements + Graph + Boards',  color: '#6FA8FF' },
     aeref:  { name: 'Reference + Python + AE',    color: '#FF9F5A' },
-    remake: { name: 'Shot-by-shot remake',        color: '#55D296' }
+    remake: { name: 'Shot-by-shot remake',        color: '#55D296' },
+    boardsEdit: { name: 'Boards + Premiere',      color: '#4FC6D9' }
   },
 
   tools: {
@@ -233,6 +234,30 @@ window.TRAILER_DATA = {
           right: { label: 'After: the finished film look', img: 'assets/trailer/promo/bts/look-after.jpg' } },
         { title: 'The finished spot', tool: 'ffmpeg', image: 'assets/trailer/promo/bts/finished.jpg',
           note: 'The finished recreation. Mono and Echo at Daydream Cinema.' }
+      ]
+    },
+    {
+      // the twist: the whole preshow was Echo and Mono's movie night; the theater turns into the jungle
+      id: 'ending', short: 'Ending', title: 'Ending: the theater becomes the jungle', flow: 'boardsEdit', dur: 10.75, w: 17,
+      clip: 'assets/trailer/ending/ending.mp4',
+      thumbs: [1, 2, 3].map((n) => 'assets/trailer/thumbs/ending-' + n + '.jpg'),
+      steps: [
+        { kind: 'grid', title: 'Elements', tool: 'Firefly Boards', captions: true, cols: 3,
+          note: 'The cast and the two sets.', cells: [
+          { label: 'Mono', img: 'assets/characters/mono.webp', fit: 'contain' },
+          { label: 'Echo', img: 'assets/trailer/ending/bts/el-echo.png', fit: 'contain' },
+          { label: 'The blobs', img: 'assets/trailer/ending/bts/el-blobs.jpg', fit: 'contain' },
+          { label: 'The theater', img: 'assets/trailer/ending/bts/el-theater.jpg' },
+          { label: 'The jungle', img: 'assets/trailer/ending/bts/el-jungle.jpg' }
+        ] },
+        { kind: 'grid', title: 'Boards to video', tool: 'Firefly Boards', cols: 2,
+          note: 'Storyboard stills, animated in Boards.', cells: [1, 2, 3, 4].map((n) => ({ label: 'Still ' + n, img: 'assets/trailer/ending/bts/sb-' + n + '.jpg' })) },
+        { kind: 'timeline', title: 'Edit in Premiere', tool: 'Premiere', note: 'Cut, music and generative sound effects.',
+          tracks: [
+            { id: 'V1', clips: [['Theater', 3.5], ['Transform', 3], ['Jungle run', 4]] },
+            { id: 'A1', clips: [['Music', 10.5]] },
+            { id: 'A2', clips: [['', 3], ['Gen SFX', 2, true], ['', 2], ['Gen SFX', 2, true], ['', 1.5]] }
+          ] }
       ]
     }
   ]
