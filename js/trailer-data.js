@@ -65,7 +65,7 @@ window.TRAILER_DATA = {
       ]
     },
     {
-      id: 'movie', short: 'Movie trailer', title: 'Movie trailer · Violet Snow', flow: 'graph', dur: 31.4, clip: 'assets/trailer/movietrailer_violetsnow_v1.mp4',
+      id: 'movie', short: 'Movie trailer', title: 'Movie trailer · Violet Snow', flow: 'graph', dur: 31.4, clip: 'assets/trailer/movietrailer_violetsnow.mp4',
       thumbs: Array.from({ length: 8 }, (_, i) => 'assets/trailer/thumbs/movie-' + (i + 1) + '.jpg'),
       steps: [
         { kind: 'grid', title: 'Starter assets', tool: 'Firefly Graph',
